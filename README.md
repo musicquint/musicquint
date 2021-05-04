@@ -1,3 +1,3 @@
-# Musicquint Framework
+# Musicquint 
 
-This will be a read me file for the musicquint framework
+This will be desription for the musicquint Framework
