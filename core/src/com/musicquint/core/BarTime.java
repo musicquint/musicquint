@@ -1,14 +1,16 @@
 package com.musicquint.core;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+//TODO documentation
 public class BarTime implements Comparable<BarTime> {
 
 	/**
 	 * Object pool for caching all BarTimes.
 	 */
-	private static final HashMap<Integer, HashMap<Integer, BarTime>> OBJECT_POOL = new HashMap<>();
+	private static final Map<Integer, Map<Integer, BarTime>> OBJECT_POOL = new HashMap<>();
 
 	/**
 	 * BarTime of 0/1
@@ -116,7 +118,7 @@ public class BarTime implements Comparable<BarTime> {
 	public static final BarTime BREVE = BarTime.of(8, 1);
 
 	// Class fields
-	private final int enumerator;
+	private final int numerator;
 
 	private final int denominator;
 
@@ -125,7 +127,7 @@ public class BarTime implements Comparable<BarTime> {
 	 * As there is no validity check and no caching.
 	 */
 	private BarTime(int enumerator, int denominator) {
-		this.enumerator = enumerator;
+		this.numerator = enumerator;
 		this.denominator = denominator;
 	}
 
@@ -139,15 +141,15 @@ public class BarTime implements Comparable<BarTime> {
 	 * @return a BarTime in a completely shortened form.
 	 * @throws IllegalArgumentException if the denominator is zero.
 	 */
-	public static BarTime of(int enumerator, int denominator) {
+	public static BarTime of(int numerator, int denominator) {
 		// The denominator cannot be zero
 		if (denominator == 0) {
 			throw new IllegalArgumentException("A BarTime cannot have denominator zero.");
 		}
 		// Calculate the greatest common factor. The gcf cannot be zero as both numbers
 		// cannot be zero
-		int gcf = greatestCommonFactor(enumerator, denominator);
-		int timeEnum = enumerator / gcf;
+		int gcf = greatestCommonFactor(numerator, denominator);
+		int timeEnum = numerator / gcf;
 		int timeDenom = denominator / gcf;
 		if (OBJECT_POOL.containsKey(timeDenom) && OBJECT_POOL.get(timeDenom).containsKey(timeEnum)) {
 			return OBJECT_POOL.get(timeDenom).get(timeEnum);
@@ -165,13 +167,13 @@ public class BarTime implements Comparable<BarTime> {
 	}
 
 	/**
-	 * A BarTime is represented by a fraction. This method returns the enumerator of
+	 * A BarTime is represented by a fraction. This method returns the numerator of
 	 * this representation.
 	 *
-	 * @return the enumerator of the BarTime.
+	 * @return the numerator of the BarTime.
 	 */
-	public int getEnumerator() {
-		return enumerator;
+	public int getNumerator() {
+		return numerator;
 	}
 
 	/**
@@ -198,8 +200,8 @@ public class BarTime implements Comparable<BarTime> {
 
 		int factor1 = lcm / time1.getDenominator();
 		int factor2 = lcm / time2.getDenominator();
-		int time1ExpandedEnum = time1.getEnumerator() * factor1;
-		int time2ExpandedEnum = time2.getEnumerator() * factor2;
+		int time1ExpandedEnum = time1.getNumerator() * factor1;
+		int time2ExpandedEnum = time2.getNumerator() * factor2;
 
 		int sumEnumerators = time1ExpandedEnum + time2ExpandedEnum;
 		return BarTime.of(sumEnumerators, lcm);
@@ -219,8 +221,8 @@ public class BarTime implements Comparable<BarTime> {
 
 		int factor1 = lcm / time1.getDenominator();
 		int factor2 = lcm / time2.getDenominator();
-		int time1ExpandedEnum = time1.getEnumerator() * factor1;
-		int time2ExpandedEnum = time2.getEnumerator() * factor2;
+		int time1ExpandedEnum = time1.getNumerator() * factor1;
+		int time2ExpandedEnum = time2.getNumerator() * factor2;
 
 		int enumerator = time1ExpandedEnum - time2ExpandedEnum;
 		return BarTime.of(enumerator, lcm);
@@ -236,8 +238,8 @@ public class BarTime implements Comparable<BarTime> {
 	public static BarTime divide(BarTime time1, BarTime time2) {
 		Objects.requireNonNull(time1, "Cannot divide the BarTimes. The first argument is null");
 		Objects.requireNonNull(time2, "Cannot divide the BarTimes. The second argument is null");
-		int enumerator = time1.getEnumerator() * time2.getDenominator();
-		int denominator = time1.getDenominator() * time2.getEnumerator();
+		int enumerator = time1.getNumerator() * time2.getDenominator();
+		int denominator = time1.getDenominator() * time2.getNumerator();
 		return BarTime.of(enumerator, denominator);
 	}
 
@@ -251,7 +253,7 @@ public class BarTime implements Comparable<BarTime> {
 	public static BarTime multiply(BarTime time1, BarTime time2) {
 		Objects.requireNonNull(time1, "Cannot multiply the BarTimes. The first argument is null");
 		Objects.requireNonNull(time2, "Cannot multiply the BarTimes. The second argument is null");
-		int enumerator = time1.getEnumerator() * time2.getEnumerator();
+		int enumerator = time1.getNumerator() * time2.getNumerator();
 		int denominator = time1.getDenominator() * time2.getDenominator();
 		return BarTime.of(enumerator, denominator);
 	}
@@ -337,9 +339,9 @@ public class BarTime implements Comparable<BarTime> {
 	@Override
 	public int compareTo(BarTime other) {
 		Objects.requireNonNull(other, "Cannot compare to null.");
-		if (enumerator * other.getDenominator() > other.getEnumerator() * denominator) {
+		if (numerator * other.getDenominator() > other.getNumerator() * denominator) {
 			return 1;
-		} else if (enumerator * other.getDenominator() < other.getEnumerator() * denominator) {
+		} else if (numerator * other.getDenominator() < other.getNumerator() * denominator) {
 			return -1;
 		} else {
 			return 0;
@@ -380,13 +382,13 @@ public class BarTime implements Comparable<BarTime> {
 
 	@Override
 	public int hashCode() {
-		if (enumerator == 0) {
+		if (numerator == 0) {
 			return 0;
 		} else {
 			final int prime = 31;
 			int result = 1;
 			result = prime * result + denominator;
-			result = prime * result + enumerator;
+			result = prime * result + numerator;
 			return result;
 		}
 	}
@@ -403,7 +405,7 @@ public class BarTime implements Comparable<BarTime> {
 			return false;
 		}
 		BarTime other = (BarTime) obj;
-		if (enumerator * other.denominator != other.enumerator * denominator) {
+		if (numerator * other.denominator != other.numerator * denominator) {
 			return false;
 		}
 		return true;
@@ -411,6 +413,6 @@ public class BarTime implements Comparable<BarTime> {
 
 	@Override
 	public String toString() {
-		return enumerator + "/" + denominator;
+		return numerator + "/" + denominator;
 	}
 }
