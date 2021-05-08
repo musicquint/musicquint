@@ -1,9 +1,13 @@
 package com.musicquint.core;
 
-public class Note extends AbstractNote {
+public final class Note extends AbstractNote {
 
-	public Note(BarTime duration, Pitch pitch, int dots, Type type) {
+	private Note(BarTime duration, Pitch pitch, int dots, Type type) {
 		super(duration, pitch, dots, type);
+	}
+	
+	public static Note of(BarTime duration, Pitch pitch, int dots, Type type) {
+		return new Note(duration, pitch, dots, type);
 	}
 
 	@Override

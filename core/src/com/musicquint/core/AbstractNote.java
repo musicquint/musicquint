@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class AbstractNote implements ContentItem {
+@SuppressWarnings("preview")
+public sealed abstract class AbstractNote implements ContentItem permits Note {
 	
 	private final BarTime duration;
 	
@@ -20,9 +21,10 @@ public abstract class AbstractNote implements ContentItem {
 
 	public AbstractNote(BarTime duration, Pitch pitch, int dots, Type type) {
 		this.duration = Objects.requireNonNull(duration);
-		this.pitch = Objects.requireNonNull(pitch);
+		this.pitch = pitch;
 		this.dots = dots;
 		this.type = Objects.requireNonNull(type);
+		this.staffNumber = FIRST_STAVE;
 		attributes = new HashMap<>();
 	}
 
@@ -43,7 +45,7 @@ public abstract class AbstractNote implements ContentItem {
 	
 	@Override
 	public void setPitch(Pitch pitch) {
-		this.pitch = Objects.requireNonNull(pitch);
+		this.pitch = pitch;
 	}
 
 	@Override
@@ -58,12 +60,12 @@ public abstract class AbstractNote implements ContentItem {
 
 	@Override
 	public boolean isPitched() {
-		return true;
+		return !isRest();
 	}
 
 	@Override
 	public boolean isRest() {
-		return false;
+		return pitch == null;
 	}
 
 	@Override
