@@ -1,28 +1,34 @@
 package com.musicquint.core;
 
-public interface ContentItem extends BarItem {
-	
-	BarTime getDuration();
-	
-	Pitch getPitch();
-	
-	void setPitch(Pitch pitch);
-	
-	int getDots();
-	
-	Type getType();
-	
-	ContentType getContentType();
-	
-	boolean isPitched();
-	
-	boolean isRest();
-	
-	<T extends ContentAttribute> T getContentAttribute(Class<T> attributeClass);
-	
-	void addContentAttribute(ContentAttribute attribute);
-	
-	public enum ContentType {
-		PRINCIPAL, OPTIONAL
-	}
+import java.util.SortedSet;
+
+public interface ContentItem extends BarItem, SortedSet<Pitch> {
+
+    BarTime getDuration();
+
+    int getDots();
+
+    Type getType();
+
+    ContentType getContentType();
+
+    default boolean isPitched() {
+        return !isRest();
+    }
+
+    default boolean isRest() {
+        return size() == 0;
+    }
+
+    default boolean isChord() {
+        return size() > 1;
+    }
+
+    <T extends ContentAttribute> T getContentAttribute(Class<T> attributeClass);
+
+    void addContentAttribute(ContentAttribute attribute);
+
+    public enum ContentType {
+        PRINCIPAL, OPTIONAL
+    }
 }

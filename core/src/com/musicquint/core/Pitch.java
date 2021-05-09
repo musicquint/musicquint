@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Data structure for a pitch in the note system. Every Pitch consists of a Step, an Alteration and an Octave.
  */
-public final class Pitch {
+public final class Pitch implements Comparable<Pitch> {
 
     private Step step;
 
@@ -85,6 +85,11 @@ public final class Pitch {
     }
 
     @Override
+    public int compareTo(Pitch o) {
+        return asInt();
+    }
+
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -122,4 +127,5 @@ public final class Pitch {
     public String toString() {
         return "Pitch [step=" + step + ", alter=" + alter + ", octave=" + octave + "]";
     }
+
 }
