@@ -1,54 +1,15 @@
 package com.musicquint.core;
 
-import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Score extends AbstractList<Part> {
+public interface Score extends List<Part> {
 
-    private String title;
+    public String getTitle();
 
-    private String composer;
+    public void setTitle(String title);
 
-    private List<Part> parts;
+    public String getComposer();
 
-    public Score() {
-        parts = new ArrayList<>();
-    }
+    public void setComposer(String composer);
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getComposer() {
-        return composer;
-    }
-
-    public void setComposer(String composer) {
-        this.composer = composer;
-    }
-
-    @Override
-    public Part get(int index) {
-        return parts.get(index);
-    }
-
-    @Override
-    public int size() {
-        return parts.size();
-    }
-
-    @Override
-    public void add(int index, Part element) {
-        parts.add(index, element);
-    }
-
-    @Override
-    public Part remove(int index) {
-        return parts.remove(index);
-    }
 }

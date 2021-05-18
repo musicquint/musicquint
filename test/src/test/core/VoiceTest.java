@@ -1,17 +1,14 @@
 package test.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
-import com.musicquint.core.Voice;
-
 class VoiceTest {
 
-	@Test
-	void test() {
-		Voice voice = new Voice();
-		fail("Not yet implemented");
-	}
+    @Test
+    void test() {
+        fail("Not yet implemented");
+    }
 
 }

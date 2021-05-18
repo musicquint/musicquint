@@ -1,5 +1,5 @@
 package com.musicquint.core;
 //TODO documentation
-public interface ContentAttribute {
+public interface NoteAttribute {
 
 }
