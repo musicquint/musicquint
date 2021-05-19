@@ -4,7 +4,15 @@ import java.util.List;
 
 public interface Bar extends List<Voice> {
 
-    public void add(BarTime time, BarAttribute attribute);
+    public static Bar create() {
+        return new com.musicquint.implementation.Bar();
+    }
+
+    public static Bar create(BarTime capacity) {
+        return new com.musicquint.implementation.Bar(capacity);
+    }
+
+    public void addAttribute(BarTime time, BarAttribute attribute);
 
     public Time getTime();
 

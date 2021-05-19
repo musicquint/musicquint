@@ -3,24 +3,26 @@ package com.musicquint.core;
 import java.util.NavigableMap;
 
 
-public interface Voice extends NavigableMap<BarTime, NoteSet> {
+public interface Voice extends NavigableMap<BarTime, ContentItem> {
 
     public static Voice create() {
-        return null;
+        return new com.musicquint.implementation.Voice();
     }
 
     public static Voice create(BarTime capacity) {
-        return null;
+        return new com.musicquint.implementation.Voice(capacity);
     }
 
-    public BarTime until(BarTime t);
+    ContentItem put(BarTime key, ContentItem value);
 
-    public BarTime next(BarTime t);
+    BarTime until(BarTime t);
 
-    public boolean fits(BarTime t, NoteSet item);
+    BarTime next(BarTime t);
 
-    public BarTime getDuration();
+    boolean fits(BarTime t, ContentItem item);
 
-    public BarTime getCapacity();
+    BarTime getDuration();
+
+    BarTime getCapacity();
 
 }

@@ -18,6 +18,10 @@ public interface Note extends Comparable<Note>{
 
     NoteType getNoteType();
 
+    boolean isRest();
+
+    boolean isPitched();
+
     void addAttribute(NoteAttribute attribute);
 
     <T extends NoteAttribute> T getAttribute(Class<T> attributeKey);

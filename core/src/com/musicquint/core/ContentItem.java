@@ -2,10 +2,12 @@ package com.musicquint.core;
 
 import java.util.SortedSet;
 
-public interface NoteSet extends SortedSet<Note>{
+public interface ContentItem extends SortedSet<Note>, BarItem {
 
     @Override
     boolean add(Note e);
+
+    boolean addDecoration(ContentItem decorationItem);
 
     @Override
     int size();
