@@ -1,4 +1,4 @@
-package com.musicquint.implementation;
+package com.musicquint.util;
 
 import java.util.AbstractMap;
 import java.util.Comparator;
@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.function.Supplier;
 
-public abstract class MQMap<K,V > extends AbstractMap<K, V> implements NavigableMap<K, V> {
+public class MQMap<K,V > extends AbstractMap<K, V> implements NavigableMap<K, V> {
 
     private NavigableMap<K, V> mqMap;
 

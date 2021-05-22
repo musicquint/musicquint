@@ -1,33 +1,13 @@
 package com.musicquint.core;
 
-public interface Note extends Comparable<Note>{
+public class Note extends AbstractNote {
 
-    public final static NoteType PRINCIPAL = NoteType.PRINCIPAL;
-
-    public final static NoteType OPTIONAL = NoteType.OPTIONAL;
-
-    Pitch getPitch();
-
-    void setPitch();
-
-    BarTime getDuration();
-
-    int getDots();
-
-    Type getType();
-
-    NoteType getNoteType();
-
-    boolean isRest();
-
-    boolean isPitched();
-
-    void addAttribute(NoteAttribute attribute);
-
-    <T extends NoteAttribute> T getAttribute(Class<T> attributeKey);
-
-    public enum NoteType {
-        PRINCIPAL, OPTIONAL
+    public Note(Pitch pitch, BarTime duration, Type type, int dots) {
+        super(pitch, duration, type, dots);
     }
 
+    @Override
+    public Category getCategory() {
+        return Category.PRINCIPAL;
+    }
 }

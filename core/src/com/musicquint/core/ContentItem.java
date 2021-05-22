@@ -1,23 +1,51 @@
 package com.musicquint.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
-public interface ContentItem extends SortedSet<Note>, BarItem {
+import com.musicquint.util.MQSet;
+
+public class ContentItem extends MQSet<AbstractNote> {
+
+    private List<SortedSet<AbstractNote>> optionals;
+
+    public ContentItem() {
+        super(TreeSet::new);
+        optionals = new ArrayList<>();
+    }
 
     @Override
-    boolean add(Note e);
+    public boolean add(AbstractNote e) {
+        switch (e.getCategory()) {
+        case OPTIONAL:
+            SortedSet<AbstractNote> optionalSet = new TreeSet<>();
+            optionalSet.add(e);
+            optionals.add(optionalSet);
+        case PRINCIPAL:
+            return add(e);
+        default:
+            throw new RuntimeException("Unknown Categoryt");
 
-    boolean addDecoration(ContentItem decorationItem);
+        }
+    }
 
-    @Override
-    int size();
+    public BarTime getDuration() {
+        return stream().map(AbstractNote::getDuration).max(BarTime::compareTo).orElse(BarTime.ZERO);
+    }
 
-    BarTime getDuration();
+    public SortedSet<Pitch> getPitches() {
+        return stream().filter(AbstractNote::isPitched).map(AbstractNote::getPitch)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
 
-    SortedSet<Pitch> getPitches();
+    public boolean isRest() {
+        return getPitches().isEmpty();
+    }
 
-    boolean isRest();
-
-    boolean isChord();
-
+    public boolean isChord() {
+        return getPitches().size() > 1;
+    }
 }

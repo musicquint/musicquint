@@ -1,10 +1,10 @@
-package com.musicquint.implementation;
+package com.musicquint.util;
 
 import java.util.AbstractList;
 import java.util.List;
 import java.util.function.Supplier;
 
-public abstract class MQList<E> extends AbstractList<E> {
+public class MQList<E> extends AbstractList<E> {
 
     private List<E> mqList;
 

@@ -1,4 +1,4 @@
-package com.musicquint.implementation;
+package com.musicquint.util;
 
 import java.util.AbstractSet;
 import java.util.Comparator;
@@ -6,11 +6,11 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.function.Supplier;
 
-public abstract class MQSet<E> extends AbstractSet<E> implements SortedSet<E> {
+public class MQSet<E> extends AbstractSet<E> implements SortedSet<E> {
 
     private SortedSet<E> mqSet;
 
-    protected MQSet(Supplier<? extends SortedSet<E>> supplier) {
+    public MQSet(Supplier<? extends SortedSet<E>> supplier) {
         this.mqSet = supplier.get();
     }
 

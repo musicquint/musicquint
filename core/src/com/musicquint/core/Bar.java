@@ -1,26 +1,49 @@
 package com.musicquint.core;
 
-import java.util.List;
 
-public interface Bar extends List<Voice> {
+import java.util.ArrayList;
 
-    public static Bar create() {
-        return new com.musicquint.implementation.Bar();
+import com.musicquint.util.MQList;
+
+public final class Bar extends MQList<Voice> {
+
+    private BarTime capacity;
+
+    private Time time;
+
+    private boolean isImplicit;
+
+    public Bar() {
+        this(BarTime.FOUR_QUARTER);
     }
 
-    public static Bar create(BarTime capacity) {
-        return new com.musicquint.implementation.Bar(capacity);
+    public Bar(BarTime capacity) {
+        super(ArrayList::new);
+        this.capacity = capacity;
     }
 
-    public void addAttribute(BarTime time, BarAttribute attribute);
+    public void addAttribute(BarTime time, BarAttribute attribute) {
+        // TODO Auto-generated method stub
 
-    public Time getTime();
+    }
 
-    public void setTime(Time time);
+    public Time getTime() {
+        return time;
+    }
 
-    public BarTime getCapacity();
+    public void setTime(Time time) {
+        this.time = time;
+    }
 
-    public boolean isImplicit();
+    public BarTime getCapacity() {
+        return capacity;
+    }
 
-    public void setImplicit(boolean isImplicit);
+    public boolean isImplicit() {
+        return isImplicit;
+    }
+
+    public void setImplicit(boolean isImplicit) {
+        this.isImplicit = isImplicit;
+    }
 }
