@@ -144,13 +144,23 @@ public class BarTime implements Comparable<BarTime> {
     public static BarTime of(int numerator, int denominator) {
         // The denominator cannot be zero
         if (denominator == 0) {
-            throw new IllegalArgumentException("A BarTime cannot have denominator zero.");
+            throw new IllegalArgumentException("A BarTime cannot have denominator zero");
         }
         // Calculate the greatest common factor. The gcf cannot be zero as both numbers
         // cannot be zero
         int gcf = greatestCommonFactor(numerator, denominator);
-        int timeEnum = numerator / gcf;
-        int timeDenom = denominator / gcf;
+
+        int timeEnum, timeDenom;
+        if (denominator > 0) {
+            timeEnum = numerator / gcf;
+            timeDenom = denominator / gcf;
+        } else {
+            // Change the sign of the denominator if the denominator is less than zero to
+            // gain uniqueness.
+            timeEnum = -numerator / gcf;
+            timeDenom = -denominator / gcf;
+        }
+
         if (OBJECT_POOL.containsKey(timeDenom) && OBJECT_POOL.get(timeDenom).containsKey(timeEnum)) {
             return OBJECT_POOL.get(timeDenom).get(timeEnum);
         } else {
@@ -208,6 +218,17 @@ public class BarTime implements Comparable<BarTime> {
     }
 
     /**
+     * Returns a BarTime equal to the sum of this BarTime and the given argument.
+     * The method makes use of the static {@code add} method and therefore
+     *
+     * @param other
+     * @return the sum of {@code this} and {@code other}
+     */
+    public BarTime add(BarTime other) {
+        return BarTime.add(this, other);
+    }
+
+    /**
      * Returns a BarTime equal to the difference of both BarTimes
      *
      * @param time1
@@ -229,6 +250,17 @@ public class BarTime implements Comparable<BarTime> {
     }
 
     /**
+     * Returns a BarTime equal to the difference of this BarTime and the given
+     * argument. The method makes use of the static {@code add} method and therefore
+     *
+     * @param other
+     * @return the difference of {@code this} and {@code other}
+     */
+    public BarTime subtract(BarTime other) {
+        return BarTime.subtract(this, other);
+    }
+
+    /**
      * Returns a BarTime equal to the fraction of both BarTimes
      *
      * @param time1
@@ -244,11 +276,22 @@ public class BarTime implements Comparable<BarTime> {
     }
 
     /**
+     * Returns a BarTime equal to the fractions of this BarTime and the given
+     * argument. The method makes use of the static {@code add} method and therefore
+     *
+     * @param other
+     * @return the fraction of {@code this} and {@code other}
+     */
+    public BarTime divide(BarTime other) {
+        return BarTime.divide(this, other);
+    }
+
+    /**
      * Returns a BarTime equal to the multiplication of both BarTimes
      *
      * @param time1
      * @param time2
-     * @return the multiplication of time1 and time2
+     * @return the product of time1 and time2
      */
     public static BarTime multiply(BarTime time1, BarTime time2) {
         Objects.requireNonNull(time1, "Cannot multiply the BarTimes. The first argument is null");
@@ -256,6 +299,16 @@ public class BarTime implements Comparable<BarTime> {
         int enumerator = time1.getNumerator() * time2.getNumerator();
         int denominator = time1.getDenominator() * time2.getDenominator();
         return BarTime.of(enumerator, denominator);
+    }
+
+    /**
+     * Returns a BarTime equal to the multiplication of both BarTimes
+     *
+     * @param other
+     * @return the product of {@code this} and {@code other}
+     */
+    public BarTime multiply(BarTime other) {
+        return BarTime.multiply(this, other);
     }
 
     /**

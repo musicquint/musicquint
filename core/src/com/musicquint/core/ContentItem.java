@@ -27,7 +27,7 @@ public class ContentItem extends MQSet<AbstractNote> {
         case PRINCIPAL:
             return add(e);
         default:
-            throw new RuntimeException("Unknown Categoryt");
+            throw new RuntimeException("Unknown Category");
 
         }
     }
