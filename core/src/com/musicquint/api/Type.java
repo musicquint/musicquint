@@ -1,4 +1,4 @@
-package com.musicquint.core;
+package com.musicquint.api;
 
 import java.util.EnumSet;
 import java.util.NoSuchElementException;
@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 /**
  * Notes and Rest usually have a Type for visual representation.
  */
-public enum Type {
+public enum Type implements Comparable<Type> {
 
     BREVE(BarTime.BREVE),
     WHOLE(BarTime.WHOLE),

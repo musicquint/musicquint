@@ -1,4 +1,4 @@
-package com.musicquint.core;
+package com.musicquint.api;
 
 import java.util.Objects;
 

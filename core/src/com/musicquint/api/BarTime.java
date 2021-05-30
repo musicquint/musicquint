@@ -1,4 +1,4 @@
-package com.musicquint.core;
+package com.musicquint.api;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -177,6 +177,19 @@ public class BarTime implements Comparable<BarTime> {
     }
 
     /**
+     * Static factory method that returns a BarTime with a completely shortened
+     * fraction representation that is equal to the fraction of
+     * {@code enumerator/1}. If such a {@code BarTime} has already been
+     * created the same object is returned. Otherwise such a {@code BarTime} is
+     * created and cached.
+     *
+     * @return a BarTime in a completely shortened form.
+     */
+    public static BarTime of(int i) {
+        return of(i,1);
+    }
+
+    /**
      * A BarTime is represented by a fraction. This method returns the numerator of
      * this representation.
      *
@@ -319,9 +332,9 @@ public class BarTime implements Comparable<BarTime> {
     public static BarTime max(BarTime time1, BarTime time2) {
         Objects.requireNonNull(time1, "Cannot compare the BarTimes. The first argument is null");
         Objects.requireNonNull(time2, "Cannot compare the BarTimes. The second argument is null");
-        if (time1.isGreaterThan(time2)) {
+        if (time1.isGreater(time2)) {
             return time1;
-        } else if (time1.isLessThan(time2)) {
+        } else if (time1.isLess(time2)) {
             return time2;
         } else {
             // Both are equal
@@ -337,9 +350,9 @@ public class BarTime implements Comparable<BarTime> {
     public static BarTime min(BarTime time1, BarTime time2) {
         Objects.requireNonNull(time1, "Cannot compare the BarTimes. The first argument is null");
         Objects.requireNonNull(time2, "Cannot compare the BarTimes. The second argument is null");
-        if (time1.isGreaterThan(time2)) {
+        if (time1.isGreater(time2)) {
             return time2;
-        } else if (time1.isLessThan(time2)) {
+        } else if (time1.isLess(time2)) {
             return time1;
         } else {
             // Both are equal
@@ -352,7 +365,7 @@ public class BarTime implements Comparable<BarTime> {
      *
      * @return true if other occurs later than {@code this}.
      */
-    public boolean isGreaterThan(BarTime other) {
+    public boolean isGreater(BarTime other) {
         return compareTo(other) > 0;
     }
 
@@ -361,7 +374,7 @@ public class BarTime implements Comparable<BarTime> {
      *
      * @return true if other occurs later than {@code this} or is equal.
      */
-    public boolean isGreaterThanOrEqual(BarTime other) {
+    public boolean isGreaterOrEqual(BarTime other) {
         return compareTo(other) >= 0;
     }
 
@@ -370,7 +383,7 @@ public class BarTime implements Comparable<BarTime> {
      *
      * @return true if other occurs sooner than {@code this} or is equal.
      */
-    public boolean isLessThan(BarTime other) {
+    public boolean isLess(BarTime other) {
         return compareTo(other) < 0;
     }
 
@@ -379,7 +392,7 @@ public class BarTime implements Comparable<BarTime> {
      *
      * @return true if other occurs sooner than {@code this}.
      */
-    public boolean isLessThanOrEqual(BarTime other) {
+    public boolean isLessOrEqual(BarTime other) {
         return compareTo(other) <= 0;
     }
 

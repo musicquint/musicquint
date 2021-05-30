@@ -2,6 +2,7 @@ package com.musicquint.core;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import com.musicquint.api.BarTime;
 import com.musicquint.util.MQMap;
 
 public class Voice extends MQMap<BarTime, ContentItem>  {
@@ -48,8 +49,8 @@ public class Voice extends MQMap<BarTime, ContentItem>  {
     public boolean fits(BarTime t, ContentItem item) {
         Objects.requireNonNull(t, "The given time is null");
         Objects.requireNonNull(item, "The given item is null");
-        return t.isGreaterThanOrEqual(BarTime.ZERO) && until(t).equals(BarTime.ZERO)
-                && item.getDuration().isLessThanOrEqual(next(t));
+        return t.isGreaterOrEqual(BarTime.ZERO) && until(t).equals(BarTime.ZERO)
+                && item.getDuration().isLessOrEqual(next(t));
     }
 
     public BarTime getDuration() {

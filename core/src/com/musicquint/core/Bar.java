@@ -3,6 +3,9 @@ package com.musicquint.core;
 
 import java.util.ArrayList;
 
+import com.musicquint.api.BarAttribute;
+import com.musicquint.api.BarTime;
+import com.musicquint.api.Time;
 import com.musicquint.util.MQList;
 
 public final class Bar extends MQList<Voice> {

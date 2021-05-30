@@ -1,11 +1,14 @@
 package com.musicquint.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.musicquint.api.BarTime;
+import com.musicquint.api.Pitch;
 import com.musicquint.util.MQSet;
 
 public class ContentItem extends MQSet<AbstractNote> {
@@ -17,18 +20,28 @@ public class ContentItem extends MQSet<AbstractNote> {
         optionals = new ArrayList<>();
     }
 
+    public ContentItem(Collection<AbstractNote> collection) {
+        super(TreeSet::new);
+        optionals = new ArrayList<>();
+        addAll(collection);
+    }
+
     @Override
     public boolean add(AbstractNote e) {
         switch (e.getCategory()) {
         case OPTIONAL:
             SortedSet<AbstractNote> optionalSet = new TreeSet<>();
             optionalSet.add(e);
-            optionals.add(optionalSet);
+            return optionals.add(optionalSet);
         case PRINCIPAL:
-            return add(e);
+            if (isEmpty() || e.getDuration().isLessOrEqual(getDuration())) {
+                return super.add(e);
+            } else {
+                throw new IllegalArgumentException(
+                        "The notes duration " + e.getDuration() + " is longer than the duration of the item.");
+            }
         default:
             throw new RuntimeException("Unknown Category");
-
         }
     }
 

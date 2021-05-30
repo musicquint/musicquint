@@ -1,4 +1,4 @@
-package com.musicquint.core;
+package com.musicquint.api;
 
 import java.util.EnumSet;
 
@@ -14,7 +14,7 @@ public enum Alter {
     }
 
     public static Alter valueOf(int i) {
-        return EnumSet.allOf(Alter.class).stream().filter(t -> t.asInt() == i).findAny().get();
+        return EnumSet.allOf(Alter.class).stream().filter(t -> t.asInt() == i).findFirst().get();
     }
 
     public int asInt() {
