@@ -2,7 +2,7 @@ package com.musicquint.api;
 
 import java.util.Collection;
 
-public interface Note extends Comparable<Note>, BarItem {
+public interface Note extends Comparable<Note> {
 
     Pitch getPitch();
 

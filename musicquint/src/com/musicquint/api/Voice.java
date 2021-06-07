@@ -2,12 +2,12 @@ package com.musicquint.api;
 
 import java.util.NavigableMap;
 
-public interface Voice extends NavigableMap<BarTime, ContentItem<?>> {
+public interface Voice extends NavigableMap<BarTime, PrincipalSet> {
 
     @Override
-    ContentItem<?> put(BarTime key, ContentItem<?> value);
+    PrincipalSet put(BarTime key, PrincipalSet value);
 
-    boolean fits(BarTime key, Note value);
+    boolean fits(BarTime key, PrincipalItem value);
 
     BarTime lasting(BarTime key);
 

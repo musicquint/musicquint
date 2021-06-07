@@ -1,9 +1,8 @@
 package com.musicquint.api;
 
-import java.util.List;
 import java.util.SortedSet;
 
-public interface ContentItem extends BarItem<Note> {
+public interface ContentItem<T extends Note> extends BarItem<T> {
 
     SortedSet<Pitch> getPitches();
 
@@ -14,8 +13,4 @@ public interface ContentItem extends BarItem<Note> {
     boolean isPitched();
 
     boolean isRest();
-
-    void appendOptional(ContentItem e);
-
-    List<ContentItem> getOptionals();
 }
