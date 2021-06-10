@@ -1,6 +1,7 @@
 package com.musicquint.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import com.musicquint.api.Bar;
 import com.musicquint.api.Part;
@@ -12,6 +13,11 @@ public class MQPart extends ForwardingList<Bar> implements Part {
 
     public MQPart() {
         super(ArrayList::new);
+    }
+
+    public MQPart(Collection<Bar> collection) {
+        this();
+        addAll(collection);
     }
 
     @Override

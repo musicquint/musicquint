@@ -2,7 +2,17 @@ package com.musicquint.api;
 
 import java.util.List;
 
+import com.musicquint.impl.MQBar;
+
 public interface Bar extends List<Voice> {
+
+    public static Bar create() {
+        return new MQBar();
+    }
+
+    public static Bar create(BarTime capacity) {
+        return new MQBar(capacity);
+    }
 
     Integer getBarNumber();
 

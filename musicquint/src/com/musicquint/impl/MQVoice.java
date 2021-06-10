@@ -16,6 +16,11 @@ public class MQVoice extends ForwardingNavigabgleMap<BarTime, PrincipalSet> impl
         capacity = BarTime.FOUR_QUARTER;
     }
 
+    public MQVoice(BarTime capacity) {
+        super(TreeMap::new);
+        this.capacity = capacity;
+    }
+
     @Override
     public PrincipalSet put(BarTime key, PrincipalSet value) {
         if(fits(key, value)) {
@@ -23,11 +28,6 @@ public class MQVoice extends ForwardingNavigabgleMap<BarTime, PrincipalSet> impl
         } else {
             throw new IllegalStateException("The value "+ value + " does not fit in the voice at " + key);
         }
-    }
-
-    public MQVoice(BarTime capacity) {
-        super(TreeMap::new);
-        this.capacity = capacity;
     }
 
     @Override
