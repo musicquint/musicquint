@@ -10,10 +10,14 @@ public interface Bar extends List<Voice> {
 
     BarTime getCapacity();
 
-    BarMap getAttributeMap();
+    BarAttributeMap getAttributeMap();
 
     Time getTime();
 
     void setTime(Time time);
+
+    void setImplicit(boolean isImplicit);
+
+    boolean isImplicit();
 
 }

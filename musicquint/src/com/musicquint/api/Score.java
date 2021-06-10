@@ -2,7 +2,13 @@ package com.musicquint.api;
 
 import java.util.List;
 
+import com.musicquint.impl.MQScore;
+
 public interface Score extends List<Part> {
+
+    public static Score create() {
+        return new MQScore();
+    }
 
     void setComposer(String name);
 
@@ -12,7 +18,7 @@ public interface Score extends List<Part> {
 
     String getTitle();
 
-    void setSubtitle(String title);
+    void setSubtitle(String subtitle);
 
     String getSubtitle();
 

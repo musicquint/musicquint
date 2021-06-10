@@ -6,6 +6,8 @@ public interface ContentItem extends BarItem {
 
     Pitch getPitch();
 
+    void setPitch(Pitch pitch);
+
     int getDots();
 
     Type getType();
@@ -14,4 +16,11 @@ public interface ContentItem extends BarItem {
 
     <T extends NoteAttribute> T getNoteAttribute(Class<T> key);
 
+    default boolean isPitched() {
+        return !isRest();
+    }
+
+    default boolean isRest() {
+        return getPitch() == null;
+    }
 }
