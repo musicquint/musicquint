@@ -10,7 +10,7 @@ public class ForwardingSortedSet<E> extends AbstractSet<E> implements SortedSet<
 
     private final SortedSet<E> forwardedSet;
 
-    public ForwardingSortedSet(Supplier<? extends SortedSet<E>> supplier) {
+    protected ForwardingSortedSet(Supplier<? extends SortedSet<E>> supplier) {
         forwardedSet = supplier.get();
     }
 

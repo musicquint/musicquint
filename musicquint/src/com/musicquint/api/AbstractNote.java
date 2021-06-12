@@ -57,10 +57,59 @@ public abstract class AbstractNote implements ContentItem {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends NoteAttribute> T getNoteAttribute(Class<T> key) {
-        if(attributes.containsKey(key)) {
+        if (attributes.containsKey(key)) {
             return (T) attributes.get(key);
         } else {
             return null;
         }
     }
+
+    @Override
+    public int compareTo(ContentItem o) {
+        return getPitch().asInt();
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + dots;
+        result = prime * result + ((duration == null) ? 0 : duration.hashCode());
+        result = prime * result + ((pitch == null) ? 0 : pitch.hashCode());
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AbstractNote other = (AbstractNote) obj;
+        if (dots != other.dots)
+            return false;
+        if (duration == null) {
+            if (other.duration != null)
+                return false;
+        } else if (!duration.equals(other.duration))
+            return false;
+        if (pitch == null) {
+            if (other.pitch != null)
+                return false;
+        } else if (!pitch.equals(other.pitch))
+            return false;
+        if (type != other.type)
+            return false;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " [pitch=" + pitch + ", duration=" + duration + ", dots=" + dots + ", type="
+                + type + "]";
+    }
+
 }

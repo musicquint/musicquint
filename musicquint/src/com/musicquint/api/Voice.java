@@ -1,11 +1,18 @@
 package com.musicquint.api;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.NavigableMap;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
+import com.musicquint.impl.MQOptionalSet;
+import com.musicquint.impl.MQPrincipalSet;
 import com.musicquint.impl.MQVoice;
 
-public interface Voice extends NavigableMap<BarTime, PrincipalSet> {
+public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
 
     public static Voice create() {
         return new MQVoice();
@@ -16,9 +23,40 @@ public interface Voice extends NavigableMap<BarTime, PrincipalSet> {
     }
 
     @Override
-    PrincipalSet put(BarTime key, PrincipalSet value);
+    PrincipalSet put(BarTime key, Voice.PrincipalSet value);
 
     BarTime capacity();
+
+    default void put(BarTime key, ContentItem item) {
+        if (item instanceof PrincipalItem) {
+            PrincipalItem principalItem = (PrincipalItem) item;
+            put(key, principalItem);
+        } else if (item instanceof OptionalItem) {
+            OptionalItem optionalItem = (OptionalItem) item;
+            put(key, optionalItem);
+        } else {
+            throw new IllegalArgumentException("The item of type " + item.getClass().getSimpleName()
+                    + " is not applicable to be inserted in a Voice");
+        }
+    }
+
+    default void put(BarTime key, PrincipalItem item) {
+        if (containsKey(key)) {
+            get(key).add(item);
+        } else {
+            put(key, PrincipalSet.of(item));
+        }
+    }
+
+    default void put(BarTime key, OptionalItem item) {
+        OptionalSet optionalSet = OptionalSet.of(item);
+        if (containsKey(key)) {
+            get(key).appendOptional(optionalSet);
+        } else {
+            PrincipalSet prinicpalSet = PrincipalSet.create(next(key));
+            prinicpalSet.appendOptional(optionalSet);
+        }
+    }
 
     default boolean fits(BarTime key, PrincipalSet value) {
         Objects.requireNonNull(key);
@@ -53,6 +91,73 @@ public interface Voice extends NavigableMap<BarTime, PrincipalSet> {
         } else {
             Entry<BarTime, PrincipalSet> lastEntry = lastEntry();
             return BarTime.add(lastEntry.getKey(), lastEntry.getValue().getDuration());
+        }
+    }
+
+    interface ContentSet<T extends ContentItem> extends SortedSet<T> {
+
+        default SortedSet<Pitch> getPitches() {
+            return stream().filter(ContentItem::isPitched).map(ContentItem::getPitch)
+                    .collect(Collectors.toCollection(TreeSet::new));
+        }
+
+        default BarTime getDuration() {
+            return stream().map(ContentItem::getDuration).max(BarTime::compareTo).orElse(BarTime.ZERO);
+        }
+
+        default boolean isPitched() {
+            return stream().anyMatch(ContentItem::isPitched);
+        }
+
+        default boolean isRest() {
+            return !isPitched();
+        }
+
+        default boolean isChord() {
+            return getPitches().size() > 1;
+        }
+    }
+
+    interface PrincipalSet extends ContentSet<PrincipalItem> {
+
+        public static PrincipalSet create(BarTime capacity) {
+            return new MQPrincipalSet(capacity);
+        }
+
+        public static PrincipalSet of(Collection<PrincipalItem> collection) {
+            return new MQPrincipalSet(collection);
+        }
+
+        public static PrincipalSet of(PrincipalItem... items) {
+            return new MQPrincipalSet(items);
+        }
+
+        @Override
+        boolean add(PrincipalItem e);
+
+        void appendOptional(OptionalSet optional);
+
+        void insertOptional(int i, OptionalSet optional);
+
+        OptionalSet removeOptional(int i);
+
+        void clearOptionalList();
+
+        List<OptionalSet> getOptionalList();
+    }
+
+    interface OptionalSet extends ContentSet<OptionalItem> {
+
+        public static OptionalSet create() {
+            return new MQOptionalSet();
+        }
+
+        public static OptionalSet of(Collection<OptionalItem> collection) {
+            return new MQOptionalSet(collection);
+        }
+
+        public static OptionalSet of(OptionalItem... items) {
+            return new MQOptionalSet(items);
         }
     }
 }

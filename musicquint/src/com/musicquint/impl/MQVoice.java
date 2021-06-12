@@ -3,8 +3,8 @@ package com.musicquint.impl;
 import java.util.TreeMap;
 
 import com.musicquint.api.BarTime;
-import com.musicquint.api.PrincipalSet;
 import com.musicquint.api.Voice;
+import com.musicquint.api.Voice.PrincipalSet;
 import com.musicquint.util.ForwardingNavigabgleMap;
 
 public class MQVoice extends ForwardingNavigabgleMap<BarTime, PrincipalSet> implements Voice {

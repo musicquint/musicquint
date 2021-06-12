@@ -12,5 +12,4 @@ public class MQBarAttributeMap extends ForwardingNavigabgleMap<BarTime, Attribut
     public MQBarAttributeMap() {
         super(TreeMap::new);
     }
-
 }

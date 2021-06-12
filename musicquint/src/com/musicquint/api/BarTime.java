@@ -150,26 +150,26 @@ public class BarTime implements Comparable<BarTime> {
         // cannot be zero
         int gcf = greatestCommonFactor(numerator, denominator);
 
-        int timeEnum, timeDenom;
+        int timeNum, timeDenom;
         if (denominator > 0) {
-            timeEnum = numerator / gcf;
+            timeNum = numerator / gcf;
             timeDenom = denominator / gcf;
         } else {
             // Change the sign of the denominator if the denominator is less than zero to
             // gain uniqueness.
-            timeEnum = -numerator / gcf;
+            timeNum = -numerator / gcf;
             timeDenom = -denominator / gcf;
         }
 
-        if (OBJECT_POOL.containsKey(timeDenom) && OBJECT_POOL.get(timeDenom).containsKey(timeEnum)) {
-            return OBJECT_POOL.get(timeDenom).get(timeEnum);
+        if (OBJECT_POOL.containsKey(timeDenom) && OBJECT_POOL.get(timeDenom).containsKey(timeNum)) {
+            return OBJECT_POOL.get(timeDenom).get(timeNum);
         } else {
-            BarTime t = new BarTime(timeEnum, timeDenom);
+            BarTime t = new BarTime(timeNum, timeDenom);
             if (OBJECT_POOL.containsKey(timeDenom)) {
-                OBJECT_POOL.get(timeDenom).put(timeEnum, t);
+                OBJECT_POOL.get(timeDenom).put(timeNum, t);
             } else {
                 HashMap<Integer, BarTime> barTimeMap = new HashMap<>();
-                barTimeMap.put(timeEnum, t);
+                barTimeMap.put(timeNum, t);
                 OBJECT_POOL.put(timeDenom, barTimeMap);
             }
             return t;
@@ -179,14 +179,14 @@ public class BarTime implements Comparable<BarTime> {
     /**
      * Static factory method that returns a BarTime with a completely shortened
      * fraction representation that is equal to the fraction of
-     * {@code enumerator/1}. If such a {@code BarTime} has already been
-     * created the same object is returned. Otherwise such a {@code BarTime} is
-     * created and cached.
+     * {@code enumerator/1}. If such a {@code BarTime} has already been created the
+     * same object is returned. Otherwise such a {@code BarTime} is created and
+     * cached.
      *
      * @return a BarTime in a completely shortened form.
      */
     public static BarTime of(int i) {
-        return of(i,1);
+        return of(i, 1);
     }
 
     /**
@@ -412,6 +412,14 @@ public class BarTime implements Comparable<BarTime> {
         } else {
             return 0;
         }
+    }
+
+    /**
+     * Returns an integer array of size two containing the numerator and denominator.
+     * @return {@code numerator} and {@code denominator} as integer array
+     */
+    public int[] toInt() {
+        return new int[] { numerator, denominator };
     }
 
     /**
