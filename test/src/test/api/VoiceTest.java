@@ -2,9 +2,13 @@ package test.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
+import com.musicquint.api.Alter;
 import com.musicquint.api.BarTime;
+import com.musicquint.api.GraceNote;
 import com.musicquint.api.Note;
 import com.musicquint.api.Octave;
 import com.musicquint.api.Pitch;
@@ -16,8 +20,11 @@ import com.musicquint.api.Voice.PrincipalSet;
 class VoiceTest {
 
     Note quarter = new Note(new Pitch(Step.C, Octave.ONE_LINED), BarTime.QUARTER, 0, Type.QUARTER);
-    Note eight = new Note(new Pitch(Step.C, Octave.ONE_LINED), BarTime.EIGHTH, 0, Type.EIGHTH);
-    Note half = new Note(new Pitch(Step.C, Octave.ONE_LINED), BarTime.HALF, 0, Type.HALF);
+    Note eight = new Note(new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED), BarTime.EIGHTH, 0, Type.EIGHTH);
+    Note eight2 = new Note(new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED), BarTime.EIGHTH, 0, Type.EIGHTH);
+    Note half = new Note(new Pitch(Step.D, Alter.FLAT_FLAT, Octave.ONE_LINED), BarTime.HALF, 0, Type.HALF);
+
+    GraceNote gNote = new GraceNote(new Pitch(Step.C, Octave.ONE_LINED), BarTime.QUARTER, 0, Type.QUARTER);
 
     @Test
     void test1() {
@@ -29,10 +36,78 @@ class VoiceTest {
 
     @Test
     void test2() {
-        PrincipalSet itemSet = PrincipalSet.of(quarter, half, eight);
+        // eight1 and eight2 are equal
+        PrincipalSet itemSet = PrincipalSet.of(quarter, half, eight, eight2);
         Voice voice = Voice.create();
         voice.put(BarTime.ZERO, itemSet);
         assertEquals(BarTime.HALF, voice.length());
+        assertEquals(3, itemSet.size());
+        assertEquals(true, quarter.isPitched());
+        assertEquals(true, eight.isPitched());
+        assertEquals(true, half.isPitched());
+        assertEquals(Set.of(new Pitch(Step.C, Octave.ONE_LINED), new Pitch(Step.D, Alter.FLAT_FLAT, Octave.ONE_LINED),
+                new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED)), itemSet.getPitches());
     }
 
+    @Test
+    void test3() {
+        Voice voice = Voice.create();
+        voice.put(BarTime.ZERO, quarter);
+        voice.put(BarTime.QUARTER, half);
+        voice.put(BarTime.THREE_QUARTER, eight);
+        voice.put(BarTime.of(7, 2), eight);
+        assertEquals(BarTime.FOUR_QUARTER, voice.length());
+        assertEquals(BarTime.of(8, 7), voice.lasting(BarTime.of(13, 7)));
+        assertEquals(BarTime.of(8, 7), voice.next(BarTime.of(13, 7)));
+    }
+
+    @Test
+    void test4() {
+        Voice voice = Voice.create();
+        voice.put(BarTime.ZERO, quarter);
+        voice.put(BarTime.QUARTER, half);
+        voice.put(BarTime.THREE_QUARTER, eight);
+        voice.put(BarTime.of(7, 2), eight);
+        assertEquals(BarTime.FOUR_QUARTER, voice.length());
+        assertEquals(BarTime.of(8, 7), voice.lasting(BarTime.of(13, 7)));
+        assertEquals(BarTime.of(8, 7), voice.next(BarTime.of(13, 7)));
+    }
+
+    @Test
+    void test5() {
+        Voice voice = Voice.create();
+        voice.put(BarTime.ZERO, quarter);
+        voice.put(BarTime.HALF, half);
+        assertEquals(BarTime.FOUR_QUARTER, voice.length(), "The length is not four quarter");
+        assertEquals(BarTime.ZERO, voice.lasting(BarTime.of(8, 7)),
+                "The Item in the voice has lasting effect after the duration of the item");
+        assertEquals(BarTime.of(6, 7), voice.next(BarTime.of(8, 7)),
+                "The next item should oocur in " + BarTime.of(6, 7));
+        assertEquals(true, voice.fits(BarTime.QUARTER, quarter));
+        assertEquals(false, voice.fits(BarTime.of(8, 7), quarter));
+    }
+
+    @Test
+    void test6() {
+        Voice voice = Voice.create();
+        voice.put(BarTime.ZERO, quarter);
+        voice.put(BarTime.QUARTER, gNote);
+        assertEquals(BarTime.FOUR_QUARTER, voice.length());
+        assertEquals(BarTime.THREE_QUARTER, voice.get(BarTime.QUARTER).getDuration());
+        voice.put(BarTime.QUARTER, eight);
+        assertEquals(BarTime.THREE_EIGHTH, voice.length());
+        assertEquals(BarTime.EIGHTH, voice.get(BarTime.QUARTER).getDuration());
+    }
+
+    @Test
+    void test7() {
+        Voice voice = Voice.create();
+        voice.put(BarTime.ZERO, PrincipalSet.of(quarter, eight));
+        voice.put(BarTime.QUARTER, gNote);
+        voice.put(BarTime.QUARTER, eight);
+        voice.put(BarTime.THREE_EIGHTH, eight);
+        voice.put(BarTime.HALF, half);
+
+        System.out.println(voice);
+    }
 }

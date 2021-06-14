@@ -3,7 +3,19 @@ package com.musicquint.api;
 //TODO documentation
 public enum Step {
 
-    C(0), D(2), E(4), F(5), G(7), A(9), B(11);
+    C(0),
+
+    D(2),
+
+    E(4),
+
+    F(5),
+
+    G(7),
+
+    A(9),
+
+    B(11);
 
     private final int step;
 
@@ -15,4 +27,7 @@ public enum Step {
         return step;
     }
 
+    public String getSimpleName() {
+        return toString().toLowerCase();
+    }
 }

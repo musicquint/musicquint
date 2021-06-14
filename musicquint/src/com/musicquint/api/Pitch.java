@@ -86,7 +86,19 @@ public final class Pitch implements Comparable<Pitch> {
 
     @Override
     public int compareTo(Pitch o) {
-        return asInt();
+        if(asInt() > o.asInt()) {
+            return 1;
+        } else if(asInt() < o.asInt()) {
+            return -1;
+        } else {
+            if(getStep().asInt() > o.getStep().asInt()) {
+                return 1;
+            } else if(getStep().asInt() < o.getStep().asInt()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
     }
 
     @Override
@@ -125,6 +137,6 @@ public final class Pitch implements Comparable<Pitch> {
 
     @Override
     public String toString() {
-        return "Pitch [step=" + step + ", alter=" + alter + ", octave=" + octave + "]";
+        return step.getSimpleName() + alter.getSimpleName() + octave.getSimpleName();
     }
 }

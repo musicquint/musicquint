@@ -34,4 +34,13 @@ public class MQVoice extends ForwardingNavigabgleMap<BarTime, PrincipalSet> impl
     public BarTime capacity() {
         return capacity;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for(Entry<BarTime, PrincipalSet> entry : entrySet()) {
+            sb.append("[" + entry.getKey() + "] " + entry.getValue() + "\n");
+        }
+        return sb.toString();
+    }
 }

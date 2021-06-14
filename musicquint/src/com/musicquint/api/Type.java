@@ -9,13 +9,21 @@ import java.util.NoSuchElementException;
 public enum Type implements Comparable<Type> {
 
     BREVE(BarTime.BREVE),
+
     WHOLE(BarTime.WHOLE),
+
     HALF(BarTime.HALF),
+
     QUARTER(BarTime.QUARTER),
+
     EIGHTH(BarTime.EIGHTH),
+
     SIXTEENTH(BarTime.SIXTEENTH),
+
     THIRTY_SECOND(BarTime.THIRTY_SECOND),
+
     SIXTHY_FOURTH(BarTime.SIXTHY_FOURTH),
+
     ONE_HUNDERED_TWENTHY_EIGHTH(BarTime.ONE_HUNDERED_TWENTHY_EIGHTH);
 
     private BarTime typeDuration;
@@ -44,5 +52,30 @@ public enum Type implements Comparable<Type> {
      */
     public BarTime asBarTime() {
         return typeDuration;
+    }
+
+    public String getSimpleName() {
+        switch(this) {
+        case BREVE:
+            return "\\breve";
+        case WHOLE:
+            return "1";
+        case HALF:
+            return "2";
+        case QUARTER:
+            return "4";
+        case EIGHTH:
+            return "8";
+        case SIXTEENTH:
+            return "16";
+        case THIRTY_SECOND:
+            return "32";
+        case SIXTHY_FOURTH:
+            return "64";
+        case ONE_HUNDERED_TWENTHY_EIGHTH:
+            return "128";
+        default:
+            throw new RuntimeException("The Type " + this + " has no simple name.");
+        }
     }
 }

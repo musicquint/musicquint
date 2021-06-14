@@ -1,5 +1,6 @@
 package com.musicquint.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -29,7 +30,8 @@ public class MQPrincipalSet extends ForwardingSortedSet<PrincipalItem> implement
         }
         // Comparator orders all items according to their duration in the inverted
         // natural order resulting in the biggest element being added first.
-        collection.stream().sorted((i1, i2) -> i2.getDuration().compareTo(i1.getDuration())).forEach(this::add);
+        collection.stream().sorted((i1, i2) -> BarTime.compareTo(i2, i1)).forEach(this::add);
+        optionals = new ArrayList<>();
     }
 
     public MQPrincipalSet(PrincipalItem... items) {
@@ -39,12 +41,13 @@ public class MQPrincipalSet extends ForwardingSortedSet<PrincipalItem> implement
     public MQPrincipalSet(BarTime capacity) {
         super(TreeSet::new);
         this.capacity = capacity;
+        this.optionals = new ArrayList<>();
     }
 
     @Override
     public boolean add(PrincipalItem e) {
         if (isEmpty()) {
-            if (e.getDuration().isLessOrEqual(capacity)) {
+            if (e.getDuration().isLessOrEqual(getDuration())) {
                 capacity = e.getDuration();
                 return super.add(e);
             } else {
@@ -82,5 +85,10 @@ public class MQPrincipalSet extends ForwardingSortedSet<PrincipalItem> implement
     @Override
     public OptionalSet removeOptional(int i) {
         return optionals.remove(i);
+    }
+
+    @Override
+    public BarTime capacity() {
+        return capacity;
     }
 }

@@ -1,6 +1,6 @@
 package com.musicquint.api;
 
-public interface ContentItem extends BarItem, Comparable<ContentItem> {
+public interface ContentItem extends BarItem, Comparable<ContentItem>, TimeMeasurable {
 
     BarTime getDuration();
 

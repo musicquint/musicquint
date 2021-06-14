@@ -238,7 +238,12 @@ public class BarTime implements Comparable<BarTime> {
      * @return the sum of {@code this} and {@code other}
      */
     public BarTime add(BarTime other) {
-        return BarTime.add(this, other);
+        return add(this, other);
+    }
+
+    //TODO
+    public static BarTime add(TimeMeasurable t1, TimeMeasurable t2) {
+        return add(t1.getDuration(), t2.getDuration());
     }
 
     /**
@@ -270,7 +275,12 @@ public class BarTime implements Comparable<BarTime> {
      * @return the difference of {@code this} and {@code other}
      */
     public BarTime subtract(BarTime other) {
-        return BarTime.subtract(this, other);
+        return subtract(this, other);
+    }
+
+    //TODO
+    public static BarTime subtract(TimeMeasurable t1, TimeMeasurable t2) {
+        return subtract(t1.getDuration(), t2.getDuration());
     }
 
     /**
@@ -296,7 +306,12 @@ public class BarTime implements Comparable<BarTime> {
      * @return the fraction of {@code this} and {@code other}
      */
     public BarTime divide(BarTime other) {
-        return BarTime.divide(this, other);
+        return divide(this, other);
+    }
+
+    //TODO
+    public BarTime divide(TimeMeasurable t1, TimeMeasurable t2) {
+        return divide(t1.getDuration(), t2.getDuration());
     }
 
     /**
@@ -321,7 +336,12 @@ public class BarTime implements Comparable<BarTime> {
      * @return the product of {@code this} and {@code other}
      */
     public BarTime multiply(BarTime other) {
-        return BarTime.multiply(this, other);
+        return multiply(this, other);
+    }
+
+    //TODO
+    public static BarTime multiply(TimeMeasurable t1, TimeMeasurable t2) {
+        return multiply(t1.getDuration(), t2.getDuration());
     }
 
     /**
@@ -412,6 +432,11 @@ public class BarTime implements Comparable<BarTime> {
         } else {
             return 0;
         }
+    }
+
+    //TODO
+    public static int compareTo(TimeMeasurable t1, TimeMeasurable t2) {
+        return t1.getDuration().compareTo(t2.getDuration());
     }
 
     /**

@@ -21,4 +21,20 @@ public enum Alter {
         return alteration;
     }
 
+    public String getSimpleName() {
+        switch (this) {
+        case DOUBLE_SHARP:
+            return "ss";
+        case FLAT:
+            return "f";
+        case FLAT_FLAT:
+            return "ff";
+        case NATURAL:
+            return "";
+        case SHARP:
+            return "s";
+        default:
+            throw new RuntimeException("The Alteration is not defined " + this);
+        }
+    }
 }

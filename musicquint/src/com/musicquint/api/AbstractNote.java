@@ -108,8 +108,11 @@ public abstract class AbstractNote implements ContentItem {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " [pitch=" + pitch + ", duration=" + duration + ", dots=" + dots + ", type="
-                + type + "]";
+        StringBuilder dots = new StringBuilder();
+        for(int i = 0; i<this.dots; i++) {
+            dots.append(".");
+        }
+        return getPitch() + getType().getSimpleName()+ dots;
     }
 
 }

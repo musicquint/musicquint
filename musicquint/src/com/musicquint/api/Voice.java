@@ -55,10 +55,11 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
         } else {
             PrincipalSet prinicpalSet = PrincipalSet.create(next(key));
             prinicpalSet.appendOptional(optionalSet);
+            put(key, prinicpalSet);
         }
     }
 
-    default boolean fits(BarTime key, PrincipalSet value) {
+    default boolean fits(BarTime key, TimeMeasurable value) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
         return lasting(key).equals(BarTime.ZERO) && value.getDuration().isLessOrEqual(next(key));
@@ -70,7 +71,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
         if (lowerEntry == null) {
             return BarTime.ZERO;
         } else {
-            BarTime endLower = BarTime.add(lowerEntry.getKey(), lowerEntry.getValue().getDuration());
+            BarTime endLower = BarTime.add(lowerEntry::getKey, lowerEntry.getValue());
             return BarTime.max(BarTime.ZERO, BarTime.subtract(endLower, key));
         }
     }
@@ -90,11 +91,11 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
             return BarTime.ZERO;
         } else {
             Entry<BarTime, PrincipalSet> lastEntry = lastEntry();
-            return BarTime.add(lastEntry.getKey(), lastEntry.getValue().getDuration());
+            return BarTime.add(lastEntry::getKey, lastEntry.getValue());
         }
     }
 
-    interface ContentSet<T extends ContentItem> extends SortedSet<T> {
+    interface ContentSet<T extends ContentItem> extends SortedSet<T>, TimeMeasurable {
 
         default SortedSet<Pitch> getPitches() {
             return stream().filter(ContentItem::isPitched).map(ContentItem::getPitch)
@@ -134,6 +135,17 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
 
         @Override
         boolean add(PrincipalItem e);
+
+        BarTime capacity();
+
+        @Override
+        default BarTime getDuration() {
+            if(isEmpty()) {
+                return capacity();
+            } else {
+                return ContentSet.super.getDuration();
+            }
+        }
 
         void appendOptional(OptionalSet optional);
 
