@@ -19,12 +19,17 @@ import com.musicquint.api.Voice.PrincipalSet;
 
 class VoiceTest {
 
-    Note quarter = new Note(new Pitch(Step.C, Octave.ONE_LINED), BarTime.QUARTER, 0, Type.QUARTER);
-    Note eight = new Note(new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED), BarTime.EIGHTH, 0, Type.EIGHTH);
-    Note eight2 = new Note(new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED), BarTime.EIGHTH, 0, Type.EIGHTH);
-    Note half = new Note(new Pitch(Step.D, Alter.FLAT_FLAT, Octave.ONE_LINED), BarTime.HALF, 0, Type.HALF);
+    Note quarter = new Note.Builder().pitch(new Pitch(Step.C, Octave.ONE_LINED)).duration(BarTime.QUARTER)
+            .type(Type.QUARTER).build();
+    Note eight = new Note.Builder().pitch(new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED)).duration(BarTime.EIGHTH)
+            .type(Type.EIGHTH).build();
+    Note eight2 = new Note.Builder().pitch(new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED)).duration(BarTime.EIGHTH)
+            .type(Type.EIGHTH).build();
+    Note half = new Note.Builder().pitch(new Pitch(Step.D, Alter.FLAT_FLAT, Octave.ONE_LINED)).duration(BarTime.HALF)
+            .type(Type.HALF).build();
 
-    GraceNote gNote = new GraceNote(new Pitch(Step.C, Octave.ONE_LINED), BarTime.QUARTER, 0, Type.QUARTER);
+    GraceNote gNote = new GraceNote.Builder().pitch(new Pitch(Step.C, Octave.ONE_LINED)).duration(BarTime.QUARTER)
+            .type(Type.QUARTER).build();
 
     @Test
     void test1() {
@@ -97,17 +102,5 @@ class VoiceTest {
         voice.put(BarTime.QUARTER, eight);
         assertEquals(BarTime.THREE_EIGHTH, voice.length());
         assertEquals(BarTime.EIGHTH, voice.get(BarTime.QUARTER).getDuration());
-    }
-
-    @Test
-    void test7() {
-        Voice voice = Voice.create();
-        voice.put(BarTime.ZERO, PrincipalSet.of(quarter, eight));
-        voice.put(BarTime.QUARTER, gNote);
-        voice.put(BarTime.QUARTER, eight);
-        voice.put(BarTime.THREE_EIGHTH, eight);
-        voice.put(BarTime.HALF, half);
-
-        System.out.println(voice);
     }
 }

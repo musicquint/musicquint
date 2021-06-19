@@ -16,13 +16,15 @@ public final class Pitch implements Comparable<Pitch> {
     public Pitch(Step step, Alter alter, Octave octave) {
         this.step = Objects.requireNonNull(step);
         this.alter = Objects.requireNonNullElse(alter, Alter.NATURAL);
-        this.octave = Objects.requireNonNull(octave);
+        this.octave = Objects.requireNonNullElse(octave, Octave.ONE_LINED);
     }
 
     public Pitch(Step step, Octave octave) {
-        this.step = Objects.requireNonNull(step);
-        this.alter =  Alter.NATURAL;
-        this.octave = Objects.requireNonNull(octave);
+        this(step, null, octave);
+    }
+
+    public Pitch(Step step) {
+        this(step, null, null);
     }
 
     /**

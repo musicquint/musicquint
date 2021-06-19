@@ -3,6 +3,7 @@ package com.musicquint.api;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 public abstract class AbstractNote implements ContentItem {
 
@@ -16,11 +17,11 @@ public abstract class AbstractNote implements ContentItem {
 
     private final Map<Class<? extends NoteAttribute>, NoteAttribute> attributes;
 
-    protected AbstractNote(Pitch pitch, BarTime duration, int dots, Type type) {
-        this.pitch = pitch;
-        this.duration = Objects.requireNonNull(duration);
-        this.dots = dots;
-        this.type = Objects.requireNonNull(type);
+    protected AbstractNote(Builder<?> builder) {
+        this.pitch = builder.getPitch();
+        this.duration = Objects.requireNonNull(builder.duration);
+        this.dots = builder.dots;
+        this.type = Objects.requireNonNull(builder.type);
         attributes = new HashMap<>();
     }
 
@@ -30,8 +31,8 @@ public abstract class AbstractNote implements ContentItem {
     }
 
     @Override
-    public Pitch getPitch() {
-        return pitch;
+    public Optional<Pitch> getPitch() {
+        return Optional.ofNullable(pitch);
     }
 
     @Override
@@ -66,7 +67,8 @@ public abstract class AbstractNote implements ContentItem {
 
     @Override
     public int compareTo(ContentItem o) {
-        return getPitch().asInt();
+        //FIXME TODO this is not correct and needs to be fixed
+        return pitch.asInt();
     }
 
     @Override
@@ -109,10 +111,75 @@ public abstract class AbstractNote implements ContentItem {
     @Override
     public String toString() {
         StringBuilder dots = new StringBuilder();
-        for(int i = 0; i<this.dots; i++) {
+        for (int i = 0; i < this.dots; i++) {
             dots.append(".");
         }
-        return getPitch() + getType().getSimpleName()+ dots;
+        return getPitch() + getType().getSimpleName() + dots;
     }
 
+    public static abstract class Builder<T extends AbstractNote> {
+
+        private BarTime duration;
+
+        private Pitch pitch;
+
+        private Step step;
+
+        private Alter alter;
+
+        private Octave octave;
+
+        private int dots;
+
+        private Type type;
+
+        public Builder<T> duration(BarTime duration) {
+            this.duration = Objects.requireNonNull(duration);
+            return this;
+        }
+
+        public Builder<T> pitch(Pitch pitch) {
+            this.pitch = pitch;
+            return this;
+        }
+
+        public Builder<T> step(Step step) {
+            this.step = Objects.requireNonNull(step);
+            return this;
+        }
+
+        public Builder<T> alter(Alter alter) {
+            this.alter = alter;
+            return this;
+        }
+
+        public Builder<T> octave(Octave octave) {
+            this.octave = octave;
+            return this;
+        }
+
+        public Builder<T> dots(int dots) {
+            this.dots = dots;
+            return this;
+        }
+
+        public Builder<T> type(Type type) {
+            this.type = type;
+            return this;
+        }
+
+        private Pitch getPitch() {
+            if (pitch != null) {
+                return pitch;
+            } else {
+                if (step == null) {
+                    return null;
+                } else {
+                    return new Pitch(step, alter, octave);
+                }
+            }
+        }
+
+        public abstract T build();
+    }
 }

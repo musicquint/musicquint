@@ -1,10 +1,12 @@
 package com.musicquint.api;
 
+import java.util.Optional;
+
 public interface ContentItem extends BarItem, Comparable<ContentItem>, TimeMeasurable {
 
     BarTime getDuration();
 
-    Pitch getPitch();
+    Optional<Pitch> getPitch();
 
     void setPitch(Pitch pitch);
 
@@ -21,6 +23,6 @@ public interface ContentItem extends BarItem, Comparable<ContentItem>, TimeMeasu
     }
 
     default boolean isRest() {
-        return getPitch() == null;
+        return getPitch().isEmpty();
     }
 }

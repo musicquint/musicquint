@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -26,19 +27,6 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
     PrincipalSet put(BarTime key, Voice.PrincipalSet value);
 
     BarTime capacity();
-
-    default void put(BarTime key, ContentItem item) {
-        if (item instanceof PrincipalItem) {
-            PrincipalItem principalItem = (PrincipalItem) item;
-            put(key, principalItem);
-        } else if (item instanceof OptionalItem) {
-            OptionalItem optionalItem = (OptionalItem) item;
-            put(key, optionalItem);
-        } else {
-            throw new IllegalArgumentException("The item of type " + item.getClass().getSimpleName()
-                    + " is not applicable to be inserted in a Voice");
-        }
-    }
 
     default void put(BarTime key, PrincipalItem item) {
         if (containsKey(key)) {
@@ -98,7 +86,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
     interface ContentSet<T extends ContentItem> extends SortedSet<T>, TimeMeasurable {
 
         default SortedSet<Pitch> getPitches() {
-            return stream().filter(ContentItem::isPitched).map(ContentItem::getPitch)
+            return stream().map(ContentItem::getPitch).filter(Optional::isPresent).map(Optional::get)
                     .collect(Collectors.toCollection(TreeSet::new));
         }
 
