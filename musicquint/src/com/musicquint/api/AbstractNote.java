@@ -37,7 +37,7 @@ public abstract class AbstractNote implements ContentItem {
 
     @Override
     public void setPitch(Pitch pitch) {
-        this.pitch = Objects.requireNonNull(pitch);
+        this.pitch = pitch;
     }
 
     @Override

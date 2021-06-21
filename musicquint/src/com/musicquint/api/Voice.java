@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.musicquint.impl.MQOptionalSet;
 import com.musicquint.impl.MQPrincipalSet;
@@ -34,6 +35,10 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
         } else {
             put(key, PrincipalSet.of(item));
         }
+    }
+
+    default void put(BarTime key, PrincipalItem... item) {
+        Stream.of(item).sorted((i1, i2) -> BarTime.compareTo(i2, i1)).forEach(i -> put(key, i));
     }
 
     default void put(BarTime key, OptionalItem item) {
@@ -128,7 +133,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
 
         @Override
         default BarTime getDuration() {
-            if(isEmpty()) {
+            if (isEmpty()) {
                 return capacity();
             } else {
                 return ContentSet.super.getDuration();
