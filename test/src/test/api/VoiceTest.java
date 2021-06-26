@@ -19,16 +19,16 @@ import com.musicquint.api.Voice.PrincipalSet;
 
 class VoiceTest {
 
-    Note quarter = new Note.Builder().pitch(new Pitch(Step.C, Octave.ONE_LINED)).duration(BarTime.QUARTER)
-            .type(Type.QUARTER).build();
-    Note eight = new Note.Builder().pitch(new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED)).duration(BarTime.EIGHTH)
+    Note quarter = new Note.Builder().step(Step.C).octave(Octave.ONE_LINED).duration(BarTime.QUARTER).type(Type.QUARTER)
+            .build();
+    Note eight = new Note.Builder().step(Step.D).alter(Alter.SHARP).octave(Octave.ONE_LINED).duration(BarTime.EIGHTH)
             .type(Type.EIGHTH).build();
-    Note eight2 = new Note.Builder().pitch(new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED)).duration(BarTime.EIGHTH)
+    Note eight2 = new Note.Builder().step(Step.D).alter(Alter.SHARP).octave(Octave.ONE_LINED).duration(BarTime.EIGHTH)
             .type(Type.EIGHTH).build();
-    Note half = new Note.Builder().pitch(new Pitch(Step.D, Alter.FLAT_FLAT, Octave.ONE_LINED)).duration(BarTime.HALF)
+    Note half = new Note.Builder().step(Step.D).alter(Alter.FLAT_FLAT).octave(Octave.ONE_LINED).duration(BarTime.HALF)
             .type(Type.HALF).build();
 
-    GraceNote gNote = new GraceNote.Builder().pitch(new Pitch(Step.C, Octave.ONE_LINED)).duration(BarTime.QUARTER)
+    GraceNote gNote = new GraceNote.Builder().step(Step.C).octave(Octave.ONE_LINED).duration(BarTime.QUARTER)
             .type(Type.QUARTER).build();
 
     @Test
@@ -50,8 +50,11 @@ class VoiceTest {
         assertEquals(true, quarter.isPitched());
         assertEquals(true, eight.isPitched());
         assertEquals(true, half.isPitched());
-        assertEquals(Set.of(new Pitch(Step.C, Octave.ONE_LINED), new Pitch(Step.D, Alter.FLAT_FLAT, Octave.ONE_LINED),
-                new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED)), itemSet.getPitches());
+        assertEquals(
+                Set.of(new Pitch.Builder().step(Step.C).octave(Octave.ONE_LINED).build(),
+                        new Pitch.Builder().step(Step.D).alter(Alter.FLAT_FLAT).octave(Octave.ONE_LINED).build(),
+                        new Pitch.Builder().step(Step.D).alter(Alter.SHARP).octave(Octave.ONE_LINED).build()),
+                itemSet.getPitches());
     }
 
     @Test

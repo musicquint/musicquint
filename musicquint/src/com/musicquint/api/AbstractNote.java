@@ -123,19 +123,35 @@ public abstract class AbstractNote implements ContentItem {
 
         private Pitch pitch;
 
-        private Step step;
+        private Pitch.Builder pitchBuilder;
 
-        private Alter alter;
-
-        private Octave octave;
+        private boolean isRest;
 
         private int dots;
 
         private Type type;
 
+        public Builder() {
+            //Standard Constructor
+        }
+
+        public Builder(Builder<?> builder) {
+            this.duration = builder.duration;
+            this.pitch = builder.pitch;
+            this.pitchBuilder = builder.pitchBuilder;
+            this.dots = builder.dots;
+            this.type = builder.type;
+            this.isRest = builder.isRest;
+        }
+
         public Builder<T> duration(BarTime duration) {
             this.duration = Objects.requireNonNull(duration);
             return this;
+        }
+        
+        public Builder<T> isRest(boolean isRest) {
+        	this.isRest = isRest;
+        	return this;
         }
 
         public Builder<T> pitch(Pitch pitch) {
@@ -144,17 +160,26 @@ public abstract class AbstractNote implements ContentItem {
         }
 
         public Builder<T> step(Step step) {
-            this.step = Objects.requireNonNull(step);
+            if(pitchBuilder == null) {
+                pitchBuilder = new Pitch.Builder();
+            }
+            pitchBuilder.step(step);
             return this;
         }
 
         public Builder<T> alter(Alter alter) {
-            this.alter = alter;
+            if(pitchBuilder == null) {
+                pitchBuilder = new Pitch.Builder();
+            }
+            pitchBuilder.alter(alter);
             return this;
         }
 
         public Builder<T> octave(Octave octave) {
-            this.octave = octave;
+            if(pitchBuilder == null) {
+                pitchBuilder = new Pitch.Builder();
+            }
+            pitchBuilder.octave(octave);
             return this;
         }
 
@@ -169,14 +194,14 @@ public abstract class AbstractNote implements ContentItem {
         }
 
         private Pitch getPitch() {
-            if (pitch != null) {
-                return pitch;
-            } else {
-                if (step == null) {
-                    return null;
+            if(isRest == false) {
+                if (pitch != null) {
+                    return pitch;
                 } else {
-                    return new Pitch(step, alter, octave);
+                    return pitchBuilder.build();
                 }
+            } else {
+                return null;
             }
         }
 

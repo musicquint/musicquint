@@ -11,10 +11,10 @@ import com.musicquint.api.Step;
 
 class PitchTest {
 
-    Pitch pitch1 = new Pitch(Step.C, Octave.ONE_LINED);
-    Pitch pitch2 = new Pitch(Step.C, Octave.ONE_LINED);
-    Pitch pitch3 = new Pitch(Step.D, Alter.SHARP, Octave.ONE_LINED);
-    Pitch pitch4 = new Pitch(Step.D, Alter.FLAT_FLAT, Octave.ONE_LINED);
+    Pitch pitch1 = new Pitch.Builder().step(Step.C).octave(Octave.ONE_LINED).build();
+    Pitch pitch2 = new Pitch.Builder().step(Step.C).octave(Octave.ONE_LINED).build();
+    Pitch pitch3 = new Pitch.Builder().step(Step.D).alter(Alter.SHARP).octave(Octave.ONE_LINED).build();
+    Pitch pitch4 = new Pitch.Builder().step(Step.D).alter(Alter.FLAT_FLAT).octave(Octave.ONE_LINED).build();
 
     @Test
     void test() {

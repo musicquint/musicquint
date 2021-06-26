@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Data structure for a pitch in the note system. Every Pitch consists of a Step, an Alteration and an Octave.
  */
-public final class Pitch implements Comparable<Pitch> {
+public class Pitch implements Comparable<Pitch> {
 
     private Step step;
 
@@ -13,18 +13,10 @@ public final class Pitch implements Comparable<Pitch> {
 
     private Octave octave;
 
-    public Pitch(Step step, Alter alter, Octave octave) {
-        this.step = Objects.requireNonNull(step);
-        this.alter = Objects.requireNonNullElse(alter, Alter.NATURAL);
-        this.octave = Objects.requireNonNullElse(octave, Octave.ONE_LINED);
-    }
-
-    public Pitch(Step step, Octave octave) {
-        this(step, null, octave);
-    }
-
-    public Pitch(Step step) {
-        this(step, null, null);
+    private Pitch(Builder builder) {
+        this.step = Objects.requireNonNull(builder.step);
+        this.alter = Objects.requireNonNullElse(builder.alter, Alter.NATURAL);
+        this.octave = Objects.requireNonNullElse(builder.octave, Octave.ONE_LINED);
     }
 
     /**
@@ -140,5 +132,33 @@ public final class Pitch implements Comparable<Pitch> {
     @Override
     public String toString() {
         return step.getSimpleName() + alter.getSimpleName() + octave.getSimpleName();
+    }
+
+    public static class Builder {
+
+        private Step step;
+
+        private Alter alter;
+
+        private Octave octave;
+
+        public Builder step(Step step) {
+            this.step = step;
+            return this;
+        }
+
+        public Builder octave(Octave octave) {
+            this.octave = octave;
+            return this;
+        }
+
+        public Builder alter(Alter alter) {
+            this.alter = alter;
+            return this;
+        }
+
+        public Pitch build() {
+            return new Pitch(this);
+        }
     }
 }

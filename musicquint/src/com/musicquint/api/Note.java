@@ -8,6 +8,14 @@ public final class Note extends AbstractNote implements PrincipalItem {
 
     public static class Builder extends AbstractNote.Builder<Note> {
 
+        public Builder() {
+            super();
+        }
+
+        public Builder(Builder builder) {
+            super(builder);
+        }
+
         @Override
         public Note build() {
             return new Note(this);

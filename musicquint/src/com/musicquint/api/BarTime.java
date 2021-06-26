@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-//TODO docu
+/**
+ * A BarTime represents a duration of an BarItem or are specific
+ *
+ */
 public class BarTime implements Comparable<BarTime> {
 
     /**
@@ -15,7 +18,7 @@ public class BarTime implements Comparable<BarTime> {
     /**
      * BarTime of 0/1
      */
-    public static final BarTime ZERO = BarTime.of(0, 1);
+    public static final BarTime ZERO = BarTime.of(0);
 
     /**
      * BarTime of 1/32
@@ -70,7 +73,7 @@ public class BarTime implements Comparable<BarTime> {
     /**
      * BarTime of 1/1
      */
-    public static final BarTime QUARTER = BarTime.of(1, 1);
+    public static final BarTime QUARTER = BarTime.of(1);
 
     /**
      * BarTime of 3/2
@@ -85,12 +88,12 @@ public class BarTime implements Comparable<BarTime> {
     /**
      * BarTime of 2/1
      */
-    public static final BarTime HALF = BarTime.of(2, 1);
+    public static final BarTime HALF = BarTime.of(2);
 
     /**
      * BarTime of 3/1
      */
-    public static final BarTime THREE_QUARTER = BarTime.of(3, 1);
+    public static final BarTime THREE_QUARTER = BarTime.of(3);
 
     /**
      * BarTime of 3/1
@@ -105,12 +108,17 @@ public class BarTime implements Comparable<BarTime> {
     /**
      * BarTime of 4/1
      */
-    public static final BarTime WHOLE = BarTime.of(4, 1);
+    public static final BarTime WHOLE = BarTime.of(4);
 
     /**
      * BarTime of 4/1
      */
-    public static final BarTime FOUR_QUARTER = BarTime.of(4, 1);
+    public static final BarTime FOUR_QUARTER = WHOLE;
+
+    /**
+     * BarTime of 6/1
+     */
+    public static final BarTime WHOLE_DOT= BarTime.of(6);
 
     /**
      * BarTime of 8/1
