@@ -2,7 +2,7 @@ package com.musicquint.api;
 
 public class GraceNote extends AbstractNote implements OptionalItem {
 
-    public GraceNote(Builder builder) {
+    private GraceNote(Builder builder) {
         super(builder);
     }
 
@@ -12,7 +12,7 @@ public class GraceNote extends AbstractNote implements OptionalItem {
             super();
         }
 
-        public Builder(Builder builder) {
+        public Builder(AbstractNote.Builder<?> builder) {
             super(builder);
         }
 

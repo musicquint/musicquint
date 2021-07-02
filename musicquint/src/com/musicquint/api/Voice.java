@@ -1,71 +1,56 @@
 package com.musicquint.api;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Comparator;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.musicquint.impl.MQOptionalSet;
-import com.musicquint.impl.MQPrincipalSet;
-import com.musicquint.impl.MQVoice;
+/**
+ * A Voice is a NavigableMap which maps BarTimes to sets containing
+ * PrincipalItems. As per contract of a map a specific BarTime can only be
+ * mapped to one such set. Such sets are defined as {@linkplain ContentSet
+ * ContentSets} and offers a variety of default methods for convenience.
+ *
+ */
+public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalItem>> {
 
-public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
+    Voice.ContentSet<PrincipalItem> put(BarTime key, Voice.ContentSet<PrincipalItem> value);
 
-    public static Voice create() {
-        return new MQVoice();
-    }
+    void put(BarTime key, PrincipalItem item);
 
-    public static Voice create(BarTime capacity) {
-        return new MQVoice(capacity);
-    }
-
-    @Override
-    PrincipalSet put(BarTime key, Voice.PrincipalSet value);
+    void put(BarTime key, OptionalItem item);
 
     BarTime capacity();
 
-    default void put(BarTime key, PrincipalItem item) {
-        if (containsKey(key)) {
-            get(key).add(item);
-        } else {
-            put(key, PrincipalSet.of(item));
-        }
+    default void put(BarTime key, Collection<PrincipalItem> items) {
+        Comparator<Measurable> comparator = Measurable.canonicalComparator();
+        items.stream().sorted(comparator.reversed()).forEach(i -> put(key, i));
     }
 
-    default void put(BarTime key, PrincipalItem... item) {
-        Stream.of(item).sorted((i1, i2) -> BarTime.compareTo(i2, i1)).forEach(i -> put(key, i));
+    default void put(BarTime key, PrincipalItem... items) {
+        put(key, Stream.of(items).collect(Collectors.toSet()));
     }
 
-    default void put(BarTime key, OptionalItem item) {
-        OptionalSet optionalSet = OptionalSet.of(item);
-        if (containsKey(key)) {
-            get(key).appendOptional(optionalSet);
-        } else {
-            PrincipalSet prinicpalSet = PrincipalSet.create(next(key));
-            prinicpalSet.appendOptional(optionalSet);
-            put(key, prinicpalSet);
-        }
-    }
-
-    default boolean fits(BarTime key, TimeMeasurable value) {
+    default boolean fits(BarTime key, Measurable value) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
-        return lasting(key).equals(BarTime.ZERO) && value.getDuration().isLessOrEqual(next(key));
+        return lasting(key).equals(BarTime.ZERO) && value.isLessOrEqual(next(key));
     }
 
     default BarTime lasting(BarTime key) {
         Objects.requireNonNull(key);
-        Entry<BarTime, PrincipalSet> lowerEntry = lowerEntry(key);
+        Entry<BarTime, ContentSet<PrincipalItem>> lowerEntry = lowerEntry(key);
         if (lowerEntry == null) {
             return BarTime.ZERO;
         } else {
-            BarTime endLower = BarTime.add(lowerEntry::getKey, lowerEntry.getValue());
-            return BarTime.max(BarTime.ZERO, BarTime.subtract(endLower, key));
+            BarTime endLower = BarTime.add(lowerEntry.getKey(), lowerEntry.getValue());
+            return Measurable.max(BarTime.ZERO, BarTime.subtract(endLower, key));
         }
     }
 
@@ -83,12 +68,12 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
         if (isEmpty()) {
             return BarTime.ZERO;
         } else {
-            Entry<BarTime, PrincipalSet> lastEntry = lastEntry();
-            return BarTime.add(lastEntry::getKey, lastEntry.getValue());
+            Entry<BarTime, ContentSet<PrincipalItem>> lastEntry = lastEntry();
+            return BarTime.add(lastEntry.getKey(), lastEntry.getValue());
         }
     }
 
-    interface ContentSet<T extends ContentItem> extends SortedSet<T>, TimeMeasurable {
+    interface ContentSet<T extends ContentItem> extends Set<T>, Measurable {
 
         default SortedSet<Pitch> getPitches() {
             return stream().map(ContentItem::getPitch).filter(Optional::isPresent).map(Optional::get)
@@ -96,7 +81,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
         }
 
         default BarTime getDuration() {
-            return stream().map(ContentItem::getDuration).max(BarTime::compareTo).orElse(BarTime.ZERO);
+            return stream().max(Measurable.canonicalComparator()).map(Measurable::getDuration).orElse(BarTime.ZERO);
         }
 
         default boolean isPitched() {
@@ -109,60 +94,6 @@ public interface Voice extends NavigableMap<BarTime, Voice.PrincipalSet> {
 
         default boolean isChord() {
             return getPitches().size() > 1;
-        }
-    }
-
-    interface PrincipalSet extends ContentSet<PrincipalItem> {
-
-        public static PrincipalSet create(BarTime capacity) {
-            return new MQPrincipalSet(capacity);
-        }
-
-        public static PrincipalSet of(Collection<PrincipalItem> collection) {
-            return new MQPrincipalSet(collection);
-        }
-
-        public static PrincipalSet of(PrincipalItem... items) {
-            return new MQPrincipalSet(items);
-        }
-
-        @Override
-        boolean add(PrincipalItem e);
-
-        BarTime capacity();
-
-        @Override
-        default BarTime getDuration() {
-            if (isEmpty()) {
-                return capacity();
-            } else {
-                return ContentSet.super.getDuration();
-            }
-        }
-
-        void appendOptional(OptionalSet optional);
-
-        void insertOptional(int i, OptionalSet optional);
-
-        OptionalSet removeOptional(int i);
-
-        void clearOptionalList();
-
-        List<OptionalSet> getOptionalList();
-    }
-
-    interface OptionalSet extends ContentSet<OptionalItem> {
-
-        public static OptionalSet create() {
-            return new MQOptionalSet();
-        }
-
-        public static OptionalSet of(Collection<OptionalItem> collection) {
-            return new MQOptionalSet(collection);
-        }
-
-        public static OptionalSet of(OptionalItem... items) {
-            return new MQOptionalSet(items);
         }
     }
 }

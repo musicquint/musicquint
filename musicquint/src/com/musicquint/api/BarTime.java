@@ -5,10 +5,38 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * A BarTime represents a duration of an BarItem or are specific
+ * A BarTime represents a duration of an BarItem or are specific time event in a
+ * Bar. Every BarTime is represented by a unique rational number and there is a
+ * natural isomorphism between the field of rational numbers and BarTimes. We
+ * define that a BarTime of 1 represents the duration of a quarter note or to be
+ * an event in a Bar or Voice that occurs exactly after the duration of one
+ * quarter note. Both, BarTimes and rational numbers are are often used
+ * interchangeably.
+ * </p>
+ * A BarTime is immutable and stateless. Therefore to ensure uniqueness each
+ * BarTime is given in a irreducible form with a strictly positive denominator.
+ * Furthermore each BarTime has the singleton property. In particular for every
+ * BarTime t1, t2 with {@code t1.equals(t2)} we have {@code t1 == t2}.
+ * Additionally the class also implements the Comparable interface. Naturally
+ * the isomorphism between BarTimes and rational numbers induces a canonical
+ * order on all BarTimes which is represented by the fact, that the class
+ * implements the {@link Comparable} interface. This order is consistent with
+ * equals.
+ * </p>
+ * Tightly link to BarTimes is the concept of {@link Measurable} objects. Such
+ * objects are associated with a unique BarTime which represent the duration of
+ * such an element. The duration of such an Element is accessed through the
+ * {@code getDuration()} method and is only required to give back a BarTime.
+ * Naturally any BarTime itself fulfills this requirement and for convenience
+ * implements the {@link Measurable} interface. Additionally this class is the
+ * only where the comparator given in Measurable is guaranteed to be consistent
+ * with equals and therefore implements the {@link Comparable} interface with
+ * the implementation given in Measurable.
  *
+ * @see Measurable
+ * @see Comparable
  */
-public class BarTime implements Comparable<BarTime> {
+public class BarTime implements Measurable, Comparable<BarTime> {
 
     /**
      * Object pool for caching all BarTimes.
@@ -118,7 +146,7 @@ public class BarTime implements Comparable<BarTime> {
     /**
      * BarTime of 6/1
      */
-    public static final BarTime WHOLE_DOT= BarTime.of(6);
+    public static final BarTime WHOLE_DOT = BarTime.of(6);
 
     /**
      * BarTime of 8/1
@@ -194,7 +222,7 @@ public class BarTime implements Comparable<BarTime> {
      * @return a BarTime in a completely shortened form.
      */
     public static BarTime of(int i) {
-        return of(i, 1);
+        return BarTime.of(i, 1);
     }
 
     /**
@@ -220,19 +248,19 @@ public class BarTime implements Comparable<BarTime> {
     /**
      * Returns a BarTime equal to the sum of both BarTimes
      *
-     * @param time1
-     * @param time2
+     * @param t1
+     * @param t2
      * @return the sum of time1 and time2.
      */
-    public static BarTime add(BarTime time1, BarTime time2) {
-        Objects.requireNonNull(time1, "Cannot add the BarTimes. The first argument is null");
-        Objects.requireNonNull(time2, "Cannot add the BarTimes. The second argument is null");
-        int lcm = leastCommonMultiple(time1.getDenominator(), time2.getDenominator());
+    public static BarTime add(BarTime t1, BarTime t2) {
+        Objects.requireNonNull(t1, "Cannot add the BarTimes. The first argument is null");
+        Objects.requireNonNull(t2, "Cannot add the BarTimes. The second argument is null");
+        int lcm = leastCommonMultiple(t1.getDenominator(), t2.getDenominator());
 
-        int factor1 = lcm / time1.getDenominator();
-        int factor2 = lcm / time2.getDenominator();
-        int time1ExpandedEnum = time1.getNumerator() * factor1;
-        int time2ExpandedEnum = time2.getNumerator() * factor2;
+        int factor1 = lcm / t1.getDenominator();
+        int factor2 = lcm / t2.getDenominator();
+        int time1ExpandedEnum = t1.getNumerator() * factor1;
+        int time2ExpandedEnum = t2.getNumerator() * factor2;
 
         int sumEnumerators = time1ExpandedEnum + time2ExpandedEnum;
         return BarTime.of(sumEnumerators, lcm);
@@ -240,36 +268,43 @@ public class BarTime implements Comparable<BarTime> {
 
     /**
      * Returns a BarTime equal to the sum of this BarTime and the given argument.
-     * The method makes use of the static {@code add} method and therefore
+     * The method makes use of the static {@code add} method and therefore does not
+     * modify the given instances in any form.
      *
-     * @param other
+     * @param other the given BarTime
      * @return the sum of {@code this} and {@code other}
      */
     public BarTime add(BarTime other) {
         return add(this, other);
     }
 
-    //TODO
-    public static BarTime add(TimeMeasurable t1, TimeMeasurable t2) {
+    /**
+     * Returns a BarTime that is equal to the sum of both measurements of t1 and t2.
+     *
+     * @param t1 the first TimeMeasurable object
+     * @param t2 the second TimeMeasurable object
+     * @return the sum of both associated BarTimes.
+     */
+    public static BarTime add(Measurable t1, Measurable t2) {
         return add(t1.getDuration(), t2.getDuration());
     }
 
     /**
      * Returns a BarTime equal to the difference of both BarTimes
      *
-     * @param time1
-     * @param time2
+     * @param t1
+     * @param t2
      * @return the difference of time1 and time2.
      */
-    public static BarTime subtract(BarTime time1, BarTime time2) {
-        Objects.requireNonNull(time1, "Cannot subtract the BarTimes. The first argument is null");
-        Objects.requireNonNull(time2, "Cannot subtract the BarTimes. The second argument is null");
-        int lcm = leastCommonMultiple(time1.getDenominator(), time2.getDenominator());
+    public static BarTime subtract(BarTime t1, BarTime t2) {
+        Objects.requireNonNull(t1, "Cannot subtract the BarTimes. The first argument is null");
+        Objects.requireNonNull(t2, "Cannot subtract the BarTimes. The second argument is null");
+        int lcm = leastCommonMultiple(t1.getDenominator(), t2.getDenominator());
 
-        int factor1 = lcm / time1.getDenominator();
-        int factor2 = lcm / time2.getDenominator();
-        int time1ExpandedEnum = time1.getNumerator() * factor1;
-        int time2ExpandedEnum = time2.getNumerator() * factor2;
+        int factor1 = lcm / t1.getDenominator();
+        int factor2 = lcm / t2.getDenominator();
+        int time1ExpandedEnum = t1.getNumerator() * factor1;
+        int time2ExpandedEnum = t2.getNumerator() * factor2;
 
         int enumerator = time1ExpandedEnum - time2ExpandedEnum;
         return BarTime.of(enumerator, lcm);
@@ -277,7 +312,8 @@ public class BarTime implements Comparable<BarTime> {
 
     /**
      * Returns a BarTime equal to the difference of this BarTime and the given
-     * argument. The method makes use of the static {@code add} method and therefore
+     * argument. The method makes use of the static {@code subtract} method and
+     * therefore does not modify the given instances in any form.
      *
      * @param other
      * @return the difference of {@code this} and {@code other}
@@ -286,29 +322,38 @@ public class BarTime implements Comparable<BarTime> {
         return subtract(this, other);
     }
 
-    //TODO
-    public static BarTime subtract(TimeMeasurable t1, TimeMeasurable t2) {
+    /**
+     * Returns a BarTime equal to the difference of the measuraed BarTimes of t1 and
+     * t2. The method makes use of the static {@code subtract} method and therefore
+     * does not modify the given instances in any form.
+     *
+     * @param other
+     * @return the difference of {@code t1} and {@code t2}
+     */
+    public static BarTime subtract(Measurable t1, Measurable t2) {
         return subtract(t1.getDuration(), t2.getDuration());
     }
 
     /**
      * Returns a BarTime equal to the fraction of both BarTimes
      *
-     * @param time1
-     * @param time2
-     * @return the fraction of time1 and time2.
+     * @param t1
+     * @param t2
+     * @return the fraction of
+     * @return the difference of
      */
-    public static BarTime divide(BarTime time1, BarTime time2) {
-        Objects.requireNonNull(time1, "Cannot divide the BarTimes. The first argument is null");
-        Objects.requireNonNull(time2, "Cannot divide the BarTimes. The second argument is null");
-        int enumerator = time1.getNumerator() * time2.getDenominator();
-        int denominator = time1.getDenominator() * time2.getNumerator();
+    public static BarTime divide(BarTime t1, BarTime t2) {
+        Objects.requireNonNull(t1, "Cannot divide the BarTimes. The first argument is null");
+        Objects.requireNonNull(t2, "Cannot divide the BarTimes. The second argument is null");
+        int enumerator = t1.getNumerator() * t2.getDenominator();
+        int denominator = t1.getDenominator() * t2.getNumerator();
         return BarTime.of(enumerator, denominator);
     }
 
     /**
      * Returns a BarTime equal to the fractions of this BarTime and the given
-     * argument. The method makes use of the static {@code add} method and therefore
+     * argument. The method makes use of the static {@code divide} method and
+     * therefore does not modify the given instances in any form.
      *
      * @param other
      * @return the fraction of {@code this} and {@code other}
@@ -317,23 +362,31 @@ public class BarTime implements Comparable<BarTime> {
         return divide(this, other);
     }
 
-    //TODO
-    public BarTime divide(TimeMeasurable t1, TimeMeasurable t2) {
+    /**
+     * Returns a BarTime equal to the fractions of the measured BarTimes of t1 and
+     * t2. The method makes use of the static {@code divide} method and therefore
+     * does not modify the given instances in any form.
+     *
+     * @param t1
+     * @param t2
+     * @return the fraction of {@code t1} and {@code t2}
+     */
+    public BarTime divide(Measurable t1, Measurable t2) {
         return divide(t1.getDuration(), t2.getDuration());
     }
 
     /**
      * Returns a BarTime equal to the multiplication of both BarTimes
      *
-     * @param time1
-     * @param time2
+     * @param t1
+     * @param t2
      * @return the product of time1 and time2
      */
-    public static BarTime multiply(BarTime time1, BarTime time2) {
-        Objects.requireNonNull(time1, "Cannot multiply the BarTimes. The first argument is null");
-        Objects.requireNonNull(time2, "Cannot multiply the BarTimes. The second argument is null");
-        int enumerator = time1.getNumerator() * time2.getNumerator();
-        int denominator = time1.getDenominator() * time2.getDenominator();
+    public static BarTime multiply(BarTime t1, BarTime t2) {
+        Objects.requireNonNull(t1, "Cannot multiply the BarTimes. The first argument is null");
+        Objects.requireNonNull(t2, "Cannot multiply the BarTimes. The second argument is null");
+        int enumerator = t1.getNumerator() * t2.getNumerator();
+        int denominator = t1.getDenominator() * t2.getDenominator();
         return BarTime.of(enumerator, denominator);
     }
 
@@ -347,108 +400,33 @@ public class BarTime implements Comparable<BarTime> {
         return multiply(this, other);
     }
 
-    //TODO
-    public static BarTime multiply(TimeMeasurable t1, TimeMeasurable t2) {
+    /**
+     * Returns a BarTime equal to the multiplication of the measured BarTimes of t1
+     * and t2. The method makes use of the static {@code divide} method and
+     * therefore does not modify the given instances in any form.
+     *
+     * @param t1
+     * @param t2
+     * @return the fraction of {@code t1} and {@code t2}
+     */
+    public static BarTime multiply(Measurable t1, Measurable t2) {
         return multiply(t1.getDuration(), t2.getDuration());
     }
 
-    /**
-     * Returns the maximal BarTime.
-     *
-     * @return the maximum of both BarTimes.
-     */
-    public static BarTime max(BarTime time1, BarTime time2) {
-        Objects.requireNonNull(time1, "Cannot compare the BarTimes. The first argument is null");
-        Objects.requireNonNull(time2, "Cannot compare the BarTimes. The second argument is null");
-        if (time1.isGreater(time2)) {
-            return time1;
-        } else if (time1.isLess(time2)) {
-            return time2;
-        } else {
-            // Both are equal
-            return time1;
-        }
-    }
-
-    /**
-     * Returns the minimal BarTime.
-     *
-     * @return the minimum of both BarTimes.
-     */
-    public static BarTime min(BarTime time1, BarTime time2) {
-        Objects.requireNonNull(time1, "Cannot compare the BarTimes. The first argument is null");
-        Objects.requireNonNull(time2, "Cannot compare the BarTimes. The second argument is null");
-        if (time1.isGreater(time2)) {
-            return time2;
-        } else if (time1.isLess(time2)) {
-            return time1;
-        } else {
-            // Both are equal
-            return time1;
-        }
-    }
-
-    /**
-     * Returns true if the instance is greater than the other BarTime.
-     *
-     * @return true if other occurs later than {@code this}.
-     */
-    public boolean isGreater(BarTime other) {
-        return compareTo(other) > 0;
-    }
-
-    /**
-     * Returns true if the instance is greater than or equal to the other BarTime.
-     *
-     * @return true if other occurs later than {@code this} or is equal.
-     */
-    public boolean isGreaterOrEqual(BarTime other) {
-        return compareTo(other) >= 0;
-    }
-
-    /**
-     * Returns true if the instance is less than the other BarTime.
-     *
-     * @return true if other occurs sooner than {@code this} or is equal.
-     */
-    public boolean isLess(BarTime other) {
-        return compareTo(other) < 0;
-    }
-
-    /**
-     * Returns true if the instance is less than or equal to the other BarTime.
-     *
-     * @return true if other occurs sooner than {@code this}.
-     */
-    public boolean isLessOrEqual(BarTime other) {
-        return compareTo(other) <= 0;
-    }
-
-    /**
-     * Compares both BarTimes as fractions.
-     *
-     * @return 1 if {@code this} is bigger, -1 if {@code other} is bigger and zero
-     *         if both are equal.
-     */
     @Override
-    public int compareTo(BarTime other) {
-        Objects.requireNonNull(other, "Cannot compare to null.");
-        if (numerator * other.getDenominator() > other.getNumerator() * denominator) {
-            return 1;
-        } else if (numerator * other.getDenominator() < other.getNumerator() * denominator) {
-            return -1;
-        } else {
-            return 0;
-        }
+    public BarTime getDuration() {
+        return this;
     }
 
-    //TODO
-    public static int compareTo(TimeMeasurable t1, TimeMeasurable t2) {
-        return t1.getDuration().compareTo(t2.getDuration());
+    @Override
+    public int compareTo(BarTime o) {
+        return Measurable.canonicalComparator().compare(this, o);
     }
 
     /**
-     * Returns an integer array of size two containing the numerator and denominator.
+     * Returns an integer array of size two containing the numerator and
+     * denominator.
+     *
      * @return {@code numerator} and {@code denominator} as integer array
      */
     public int[] toInt() {

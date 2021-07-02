@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import com.musicquint.api.BarTime;
+import com.musicquint.api.Measurable;
 
 class BarTimeTest {
 
@@ -133,7 +134,7 @@ class BarTimeTest {
         BarTime t1 = BarTime.of(7, 15);
         BarTime t2 = BarTime.of(1, 5);
 
-        assertEquals(t1, BarTime.max(t1, t2));
+        assertEquals(t1, Measurable.max(t1, t2));
     }
 
     @Test
@@ -141,7 +142,7 @@ class BarTimeTest {
         BarTime t1 = BarTime.of(7, 15);
         BarTime t2 = BarTime.of(1, 5);
 
-        assertEquals(t2, BarTime.min(t1, t2));
+        assertEquals(t2, Measurable.min(t1, t2));
     }
 
     @Test
@@ -149,10 +150,10 @@ class BarTimeTest {
         BarTime t1 = BarTime.of(2, 10);
         BarTime t2 = BarTime.of(2, 10);
 
-        assertEquals(t2, BarTime.min(t1, t2));
-        assertEquals(t1, BarTime.min(t1, t2));
-        assertEquals(t2, BarTime.max(t1, t2));
-        assertEquals(t1, BarTime.max(t1, t2));
+        assertEquals(t2, Measurable.min(t1, t2));
+        assertEquals(t1, Measurable.min(t1, t2));
+        assertEquals(t2, Measurable.max(t1, t2));
+        assertEquals(t1, Measurable.max(t1, t2));
     }
 
     @Test

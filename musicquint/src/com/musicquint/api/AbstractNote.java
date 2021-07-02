@@ -18,8 +18,14 @@ public abstract class AbstractNote implements ContentItem {
     private final Map<Class<? extends NoteAttribute>, NoteAttribute> attributes;
 
     protected AbstractNote(Builder<?> builder) {
+        Objects.requireNonNull(builder);
+        Objects.requireNonNull(builder.duration);
         this.pitch = builder.getPitch();
-        this.duration = Objects.requireNonNull(builder.duration);
+        if(builder.duration.isGreaterOrEqual(BarTime.ZERO)) {
+            this.duration = builder.duration;
+        } else {
+            throw new IllegalArgumentException("A Note cannot have a duration less than zero.");
+        }
         this.dots = builder.dots;
         this.type = Objects.requireNonNull(builder.type);
         attributes = new HashMap<>();
@@ -63,12 +69,6 @@ public abstract class AbstractNote implements ContentItem {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public int compareTo(ContentItem o) {
-        //FIXME TODO this is not correct and needs to be fixed
-        return pitch.asInt();
     }
 
     @Override
@@ -148,10 +148,10 @@ public abstract class AbstractNote implements ContentItem {
             this.duration = Objects.requireNonNull(duration);
             return this;
         }
-        
+
         public Builder<T> isRest(boolean isRest) {
-        	this.isRest = isRest;
-        	return this;
+            this.isRest = isRest;
+            return this;
         }
 
         public Builder<T> pitch(Pitch pitch) {

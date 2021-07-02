@@ -2,7 +2,7 @@ package com.musicquint.api;
 
 public final class Note extends AbstractNote implements PrincipalItem {
 
-    public Note(Builder builder) {
+    private Note(Builder builder) {
         super(builder);
     }
 
@@ -12,7 +12,7 @@ public final class Note extends AbstractNote implements PrincipalItem {
             super();
         }
 
-        public Builder(Builder builder) {
+        public Builder(AbstractNote.Builder<?> builder) {
             super(builder);
         }
 

@@ -2,7 +2,7 @@ package com.musicquint.api;
 
 import java.util.Optional;
 
-public interface ContentItem extends BarItem, Comparable<ContentItem>, TimeMeasurable {
+public interface ContentItem extends BarItem, Measurable {
 
     BarTime getDuration();
 
