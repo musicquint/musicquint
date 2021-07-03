@@ -19,9 +19,9 @@ import java.util.Objects;
  * Additionally some default methods are given for convenience.
  * </p>
  * Trivially the {@link BarTime} class itself is Measurable. Also the comparator
- * induced by the Measurable interface is consistent with equals and the
- * Implementation of the interface relies on the given comparator given in the
- * Measurable interface.
+ * induced by the Measurable interface is consistent with equals in BarTime and
+ * the Implementation of the {@link Comparable} interface relies on the given
+ * comparator given in the Measurable interface.
  */
 @FunctionalInterface
 public interface Measurable {
@@ -111,9 +111,9 @@ public interface Measurable {
     }
 
     /**
-     * Returns true if the Measurable {@code other} is less or equal in
-     * comparison according to the canonical Comparator given in {@link Measurable}
-     * otherwise false.
+     * Returns true if the Measurable {@code other} is less or equal in comparison
+     * according to the canonical Comparator given in {@link Measurable} otherwise
+     * false.
      *
      * @param other the other given Measurable for comparison.
      * @return {@code true} if {@code this} is less or equal than {@code other},
