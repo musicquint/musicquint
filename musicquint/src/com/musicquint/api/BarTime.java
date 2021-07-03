@@ -413,6 +413,24 @@ public class BarTime implements Measurable, Comparable<BarTime> {
         return multiply(t1.getDuration(), t2.getDuration());
     }
 
+    /**
+     * Returns the minimal BarTime.
+     *
+     * @return the minimum of both BarTimes.
+     */
+    public static BarTime min(BarTime t1, BarTime t2) {
+        return Measurable.min(t1, t2);
+    }
+
+    /**
+     * Returns the maximum BarTime.
+     *
+     * @return the maximum of both BarTimes.
+     */
+    public static BarTime max(BarTime t1, BarTime t2) {
+        return Measurable.max(t1, t2);
+    }
+
     @Override
     public BarTime getDuration() {
         return this;
