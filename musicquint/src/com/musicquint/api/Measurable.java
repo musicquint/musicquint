@@ -6,13 +6,13 @@ import java.util.Objects;
 /**
  * The interface requires each objects of a class that implements it to
  * associate a unique BarTime to each object of the class. This unique BarTime
- * is called through the {@code getDuration()} method. Objects that fulfill this
+ * is called through the {@link #getDuration()} method. Objects that fulfill this
  * requirement are said to be measurable and the associated BarTime is called
  * the measurement of said object. As this interface also allows to be
  * implemented through an anonymous class or a lambda it fulfills the
  * requirement of a functional interface and is annotated as such.
  * </p>
- * The Measurable interface offers a {@linkplain Comparator canonical
+ * The Measurable interface offers a {@linkplain #canonicalComparator() canonical
  * Comparator} which imposes an natural ordering on all Measurable objects. As
  * this order cannot be guaranteed to be consistent with equals we refrained
  * from extending this interface from the {@link Comparable} interface.
@@ -35,6 +35,7 @@ public interface Measurable {
      * create an instance of the measurable class.
      *
      * @return the measured BarTime
+     * @see FunctionalInterface
      */
     BarTime getDuration();
 

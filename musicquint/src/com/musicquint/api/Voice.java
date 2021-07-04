@@ -15,8 +15,34 @@ import java.util.stream.Stream;
  * A Voice is a NavigableMap which maps BarTimes to sets containing
  * PrincipalItems. As per contract of a map a specific BarTime can only be
  * mapped to one such set. Such sets are defined as {@linkplain ContentSet
- * ContentSets} and offers a variety of default methods for convenience.
- *
+ * ContentSets} and offers a variety of default methods for convenience. Another
+ * way to view a voice is to see it as NavigableMap which maps a BarTime to
+ * multiple {@linkplain ContentItem ContentItems} to support this view the
+ * interface offers additional methods {@link #put(BarTime, PrincipalItem)},
+ * {@link #put(BarTime, PrincipalItem...)} and
+ * {@link #put(BarTime, OptionalItem)}.
+ * </p>
+ * As a {@link ContentSet} is also a {@linkplain Measurable} object special
+ * constraints are put upon all ContentItem or ContentSet with a duration
+ * {@code d} that are to be added into a Voice at any given BarTime {@code t}
+ * (Note that we use the {@code +} and {@code -} operator as abbreviation for
+ * the {@link BarTime#add(BarTime, BarTime)} and
+ * {@link BarTime#subtract(BarTime, BarTime)} methods):
+ * <ul>
+ * <li>After adding the item to the voice no other item can be added to the
+ * voice from the time {@code t} up to {@code t + d}. Interval boundaries are
+ * excluded from this rule. A default implementation of
+ * {@link #lasting(BarTime)} is provided to check this condition.</li>
+ * <li>If the voice has a higher key {@code t'} that is higher than t. Then in
+ * accordance with the first constraint the BarTime {@code t + d} needs to be
+ * less or equal than {@code t'} or the BarTime returned by {@link #capacity()}.
+ * See also the default implementation of {@link #next(BarTime)} to help check
+ * this condition.</li>
+ * </ul>
+ * A default implementation {@link #fits(BarTime, Measurable)} is provided to
+ * check both conditions. Also we define a Voice to be consistent if
+ * {@code lasting(t) == next(t)} for every {@code t} in the interval
+ * [0, {@link #capacity()}].
  */
 public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalItem>> {
 
@@ -29,6 +55,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
     BarTime capacity();
 
     default void put(BarTime key, Collection<PrincipalItem> items) {
+        Objects.requireNonNull(items);
         Comparator<Measurable> comparator = Measurable.canonicalComparator();
         items.stream().sorted(comparator.reversed()).forEach(i -> put(key, i));
     }
@@ -50,7 +77,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
             return BarTime.ZERO;
         } else {
             BarTime endLower = BarTime.add(lowerEntry.getKey(), lowerEntry.getValue());
-            return Measurable.max(BarTime.ZERO, BarTime.subtract(endLower, key));
+            return BarTime.max(BarTime.ZERO, BarTime.subtract(endLower, key));
         }
     }
 

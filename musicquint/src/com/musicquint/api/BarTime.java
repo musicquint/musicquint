@@ -17,21 +17,16 @@ import java.util.Objects;
  * BarTime is given in a irreducible form with a strictly positive denominator.
  * Furthermore each BarTime has the singleton property. In particular for every
  * BarTime t1, t2 with {@code t1.equals(t2)} we have {@code t1 == t2}.
- * Additionally the class also implements the Comparable interface. Naturally
- * the isomorphism between BarTimes and rational numbers induces a canonical
- * order on all BarTimes which is represented by the fact, that the class
- * implements the {@link Comparable} interface. This order is consistent with
- * equals.
  * </p>
  * Tightly link to BarTimes is the concept of {@link Measurable} objects. Such
  * objects are associated with a unique BarTime which represent the duration of
  * such an element. The duration of such an Element is accessed through the
- * {@code getDuration()} method and is only required to give back a BarTime.
- * Naturally any BarTime itself fulfills this requirement and for convenience
- * implements the {@link Measurable} interface. Additionally this class is the
- * only where the comparator given in Measurable is guaranteed to be consistent
- * with equals and therefore implements the {@link Comparable} interface with
- * the implementation given in Measurable.
+ * {@link Measurable#getDuration()} method and is only required to give back a
+ * BarTime. Naturally any BarTime itself fulfills this requirement and for
+ * convenience implements the {@link Measurable} interface. Additionally this
+ * class is the only where the comparator given in Measurable is guaranteed to
+ * be consistent with equals and therefore implements the {@link Comparable}
+ * interface with the implementation given in Measurable.
  *
  * @see Measurable
  * @see Comparable
@@ -455,9 +450,11 @@ public class BarTime implements Measurable, Comparable<BarTime> {
      * Calculates the greatest common factor of i and j. The method relies on the
      * Euclidean algorithm.
      *
+     * @param i the first integer
+     * @param j the second integer
      * @return the greatest common factor
      */
-    private static int greatestCommonFactor(int i, int j) {
+    public static int greatestCommonFactor(int i, int j) {
         if (i == 0 || j == 0) {
             return Math.max(Math.abs(i), Math.abs(j));
         } else {
@@ -475,11 +472,12 @@ public class BarTime implements Measurable, Comparable<BarTime> {
     /**
      * Calculates the least common multiple of i and j
      *
-     * @param i
-     * @param j
+     * @param i the first integer
+     * @param j the second integer
      * @return the least common multiple of i and j.
+     * @throws ArithmeticException if both i and j are zero.
      */
-    private static int leastCommonMultiple(int i, int j) {
+    public static int leastCommonMultiple(int i, int j) {
         return (i * j) / greatestCommonFactor(i, j);
     }
 

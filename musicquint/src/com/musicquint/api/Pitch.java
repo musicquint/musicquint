@@ -1,11 +1,18 @@
 package com.musicquint.api;
 
+import static java.util.Comparator.comparingInt;
+
+import java.util.Comparator;
 import java.util.Objects;
 
 /**
- * Data structure for a pitch in the note system. Every Pitch consists of a Step, an Alteration and an Octave.
+ * Data structure for a pitch in the note system. Every Pitch consists of a
+ * Step, an Alteration and an Octave.
  */
 public class Pitch implements Comparable<Pitch> {
+
+    private static final Comparator<Pitch> COMPARATOR = comparingInt((Pitch p) -> p.asInt())
+            .thenComparingInt(p -> p.getStep().asInt());
 
     private Step step;
 
@@ -21,6 +28,7 @@ public class Pitch implements Comparable<Pitch> {
 
     /**
      * Returns the Step of the Pitch
+     *
      * @return {@link Step}
      */
     public Step getStep() {
@@ -28,7 +36,9 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     /**
-     * Setter for the step in the pitch. Throws a NullpointerException if the input variable is null
+     * Setter for the step in the pitch. Throws a NullpointerException if the input
+     * variable is null
+     *
      * @param step
      * @throws NullPointerException
      */
@@ -38,6 +48,7 @@ public class Pitch implements Comparable<Pitch> {
 
     /**
      * Returns the alteration of the Pitch
+     *
      * @return {@link Alter}
      */
     public Alter getAlter() {
@@ -45,7 +56,9 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     /**
-     * Setter for the alteration in the pitch. Throws a NullpointerException if the input variable is null
+     * Setter for the alteration in the pitch. Throws a NullpointerException if the
+     * input variable is null
+     *
      * @param alter
      * @throws NullPointerException
      */
@@ -55,6 +68,7 @@ public class Pitch implements Comparable<Pitch> {
 
     /**
      * Returns the alteration of the Pitch
+     *
      * @return {@link Octave}
      */
     public Octave getOctave() {
@@ -62,7 +76,9 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     /**
-     * Setter for the octave in the pitch. Throws a NullpointerException if the input variable is null
+     * Setter for the octave in the pitch. Throws a NullpointerException if the
+     * input variable is null
+     *
      * @param octave
      * @throws NullPointerException
      */
@@ -72,6 +88,7 @@ public class Pitch implements Comparable<Pitch> {
 
     /**
      * Every Pitch has an integer for Midi-output associated with it.
+     *
      * @return
      */
     public int asInt() {
@@ -80,19 +97,11 @@ public class Pitch implements Comparable<Pitch> {
 
     @Override
     public int compareTo(Pitch o) {
-        if(asInt() > o.asInt()) {
-            return 1;
-        } else if(asInt() < o.asInt()) {
-            return -1;
-        } else {
-            if(getStep().asInt() > o.getStep().asInt()) {
-                return 1;
-            } else if(getStep().asInt() < o.getStep().asInt()) {
-                return -1;
-            } else {
-                return 0;
-            }
-        }
+        return COMPARATOR.compare(this, o);
+    }
+
+    public static Comparator<Pitch> comparator() {
+        return COMPARATOR;
     }
 
     @Override
