@@ -6,17 +6,17 @@ import java.util.Objects;
 /**
  * The interface requires each objects of a class that implements it to
  * associate a unique BarTime to each object of the class. This unique BarTime
- * is called through the {@link #getDuration()} method. Objects that fulfill this
- * requirement are said to be measurable and the associated BarTime is called
- * the measurement of said object. As this interface also allows to be
+ * is called through the {@link #getDuration()} method. Objects that fulfill
+ * this requirement are said to be measurable and the associated BarTime is
+ * called the measurement of said object. As this interface also allows to be
  * implemented through an anonymous class or a lambda it fulfills the
  * requirement of a functional interface and is annotated as such.
  * </p>
- * The Measurable interface offers a {@linkplain #canonicalComparator() canonical
- * Comparator} which imposes an natural ordering on all Measurable objects. As
- * this order cannot be guaranteed to be consistent with equals we refrained
- * from extending this interface from the {@link Comparable} interface.
- * Additionally some default methods are given for convenience.
+ * The Measurable interface offers a {@linkplain #canonicalComparator()
+ * canonical Comparator} which imposes an natural ordering on all Measurable
+ * objects. As this order cannot be guaranteed to be consistent with equals we
+ * refrained from extending this interface from the {@link Comparable}
+ * interface. Additionally some default methods are given for convenience.
  * </p>
  * Trivially the {@link BarTime} class itself is Measurable. Also the comparator
  * induced by the Measurable interface is consistent with equals in BarTime and
@@ -57,9 +57,13 @@ public interface Measurable {
      *         <li>{@code comparator(m1, m2) == 0}, if the measurement of {@code m1}
      *         is numerically equal to the measurement of {@code m2}.
      *         </ul>
+     *         The comparator throws a {@link NullPointerException} if one of the
+     *         arguments is null.
      */
     static Comparator<Measurable> canonicalComparator() {
         return (m1, m2) -> {
+            Objects.requireNonNull(m1, "Cannot compare. The first argument is null.");
+            Objects.requireNonNull(m2, "Cannot compare. The second argument is null.");
             int numerator = m1.getDuration().getNumerator();
             int denominator = m1.getDuration().getDenominator();
             int otherNumerator = m2.getDuration().getNumerator();
@@ -75,10 +79,11 @@ public interface Measurable {
      * @param other the other given Measurable for comparison.
      * @return {@code true} if {@code this} is greater than {@code other}, otherwise
      *         false.
+     * @throws NullpointerException if other is null
      * @see Measurable#canonicalComparator()
      */
     default boolean isGreater(Measurable other) {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "The other Measurable is null.");
         return canonicalComparator().compare(this, other) > 0;
     }
 
@@ -90,10 +95,11 @@ public interface Measurable {
      * @param other the other given Measurable for comparison.
      * @return {@code true} if {@code this} is greater or equal than {@code other},
      *         otherwise false.
+     * @throws NullpointerException if other is null
      * @see Measurable#canonicalComparator()
      */
     default boolean isGreaterOrEqual(Measurable other) {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "The other Measurable is null.");
         return canonicalComparator().compare(this, other) >= 0;
     }
 
@@ -107,7 +113,7 @@ public interface Measurable {
      * @see Measurable#canonicalComparator()
      */
     default boolean isLess(Measurable other) {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "The other Measurable is null.");
         return canonicalComparator().compare(this, other) < 0;
     }
 
@@ -119,10 +125,11 @@ public interface Measurable {
      * @param other the other given Measurable for comparison.
      * @return {@code true} if {@code this} is less or equal than {@code other},
      *         otherwise false.
+     * @throws NullpointerException if other is null
      * @see Measurable#canonicalComparator()
      */
     default boolean isLessOrEqual(Measurable other) {
-        Objects.requireNonNull(other);
+        Objects.requireNonNull(other, "The other Measurable is null.");
         return canonicalComparator().compare(this, other) <= 0;
     }
 
@@ -131,6 +138,7 @@ public interface Measurable {
      * equal according to the comparator the first argument is given back.
      *
      * @return the minimum of both measurable objects.
+     * @throws NullPointerException if the first or second argument is null.
      */
     static <T extends Measurable> T min(T t1, T t2) {
         Objects.requireNonNull(t1, "Cannot compare. The first argument is null");
@@ -143,6 +151,7 @@ public interface Measurable {
      * equal according to the comparator the first argument is given back.
      *
      * @return the maximum of both measurable objects.
+     * @throws NullPointerException if the first or second argument is null.
      */
     static <T extends Measurable> T max(T t1, T t2) {
         Objects.requireNonNull(t1, "Cannot compare. The first argument is null");
