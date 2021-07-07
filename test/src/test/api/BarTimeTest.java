@@ -1,33 +1,45 @@
 package test.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 import com.musicquint.api.BarTime;
-import com.musicquint.api.Measurable;
 
 class BarTimeTest {
 
     @Test
-    void singeltonProperty() {
+    void testStaticFactoryShortenedForm() {
+        BarTime t = BarTime.of(18, 45);
+        assertEquals(2, t.getNumerator());
+        assertEquals(5, t.getDenominator());
+    }
+
+    @Test
+    void testStaticFactorySingelton() {
+        BarTime t1 = BarTime.of(1, 2);
+        BarTime t2 = BarTime.of(6, 12);
+        assertTrue(t1 == t2);
+    }
+
+    @Test
+    void singeltonStaticFactoryProperty() {
         BarTime t1 = BarTime.of(17, 23);
         BarTime t2 = BarTime.of(17, 23);
         assertTrue(t1 == t2);
     }
 
     @Test
-    void singeltonProperty2() {
+    void singeltonStaticFactoryProperty2() {
         BarTime t1 = BarTime.of(17, 23);
         BarTime t2 = BarTime.of(34, 46);
         assertTrue(t1 == t2);
     }
 
     @Test
-    void staticFactoryException() {
+    void testStaticFactoryException() {
         IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> BarTime.of(1, 0));
         assertEquals("A BarTime cannot have denominator zero", e.getMessage());
     }
@@ -134,7 +146,7 @@ class BarTimeTest {
         BarTime t1 = BarTime.of(7, 15);
         BarTime t2 = BarTime.of(1, 5);
 
-        assertEquals(t1, Measurable.max(t1, t2));
+        assertEquals(t1, BarTime.max(t1, t2));
     }
 
     @Test
@@ -142,7 +154,7 @@ class BarTimeTest {
         BarTime t1 = BarTime.of(7, 15);
         BarTime t2 = BarTime.of(1, 5);
 
-        assertEquals(t2, Measurable.min(t1, t2));
+        assertEquals(t2, BarTime.min(t1, t2));
     }
 
     @Test
@@ -150,48 +162,9 @@ class BarTimeTest {
         BarTime t1 = BarTime.of(2, 10);
         BarTime t2 = BarTime.of(2, 10);
 
-        assertEquals(t2, Measurable.min(t1, t2));
-        assertEquals(t1, Measurable.min(t1, t2));
-        assertEquals(t2, Measurable.max(t1, t2));
-        assertEquals(t1, Measurable.max(t1, t2));
-    }
-
-    @Test
-    void testLess() {
-        BarTime t1 = BarTime.of(7, 15);
-        BarTime t2 = BarTime.of(1, 5);
-
-        assertTrue(t2.isLess(t1));
-        assertFalse(t2.isLess(t2));
-        assertFalse(t1.isLess(t2));
-    }
-
-    @Test
-    void testLessOrEqual() {
-        BarTime t1 = BarTime.of(7, 15);
-        BarTime t2 = BarTime.of(1, 5);
-
-        assertTrue(t2.isLess(t1));
-        assertTrue(t2.isLessOrEqual(t2));
-    }
-
-    @Test
-    void testGreater() {
-        BarTime t1 = BarTime.of(7, 15);
-        BarTime t2 = BarTime.of(1, 5);
-
-        assertTrue(t1.isGreater(t2));
-        assertFalse(t1.isGreater(t1));
-        assertFalse(t2.isGreater(t1));
-    }
-
-    @Test
-    void testGreaterOrEqual() {
-        BarTime t1 = BarTime.of(7, 15);
-        BarTime t2 = BarTime.of(1, 5);
-
-        assertTrue(t1.isGreaterOrEqual(t2));
-        assertTrue(t1.isGreaterOrEqual(t1));
-        assertFalse(t2.isGreaterOrEqual(t1));
+        assertEquals(t2, BarTime.min(t1, t2));
+        assertEquals(t1, BarTime.min(t1, t2));
+        assertEquals(t2, BarTime.max(t1, t2));
+        assertEquals(t1, BarTime.max(t1, t2));
     }
 }

@@ -154,7 +154,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
      *                                       {@link #put(BarTime, PrincipalItem)}
      * @see #put(BarTime, PrincipalItem)
      */
-    default void put(BarTime key, Collection<PrincipalItem> items) {
+    default void put(BarTime key, Collection<? extends PrincipalItem> items) {
         Objects.requireNonNull(items);
         items.stream().sorted(canonicalComparator().reversed()).forEach(i -> put(key, i));
     }
@@ -184,6 +184,14 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
         put(key, Stream.of(items).collect(Collectors.toSet()));
     }
 
+    /**
+     * Returns true if a ContentSet of with the same measurement of the given
+     * Measurable value would fit in the voice. TODO
+     * @param key
+     * @param value
+     * @throws NullPointerException if the key or value is null.
+     * @return
+     */
     default boolean fits(BarTime key, Measurable value) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
