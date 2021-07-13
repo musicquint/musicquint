@@ -3,8 +3,10 @@ package com.musicquint.api;
 import static com.musicquint.api.BarTime.add;
 import static com.musicquint.api.BarTime.subtract;
 import static com.musicquint.api.Measurable.canonicalComparator;
+import static java.util.stream.Collectors.toCollection;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.NavigableMap;
 import java.util.Objects;
 import java.util.Optional;
@@ -185,12 +187,16 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
     }
 
     /**
-     * Returns true if a ContentSet of with the same measurement of the given
-     * Measurable value would fit in the voice. TODO
-     * @param key
-     * @param value
+     * Returns true if a ContentSet with the same measurement of the given
+     * Measurable value would fit in the voice. Note that this method check the
+     * stricter condition for PrincipalItems. For OptionalItems the weaker condition
+     * {@code lasting(key} == BarTime.ZERO} suffices.
+     *
+     * @param key   the time at which the value would be added to the voice
+     * @param value a measurable value with a given measurement.
      * @throws NullPointerException if the key or value is null.
-     * @return
+     * @return true if the Measurable item would fit into the voice otherwise false.
+     * @see #lasting(BarTime)
      */
     default boolean fits(BarTime key, Measurable value) {
         Objects.requireNonNull(key);
@@ -198,6 +204,21 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
         return lasting(key).equals(BarTime.ZERO) && value.isLessOrEqual(next(key));
     }
 
+    /**
+     * Returns the duration for which a lower item has still a lasting effect on the
+     * voice. Any item that is added to a voice prohibits any further entries for
+     * the measured duration of the item. Therefore this methods imposes the
+     * condition for all items that are to be added to the voice that
+     * {@code lasting(key) == BarTime.ZERO}.
+     *
+     * @param key the time that is checked for any lasting impact of a lower item.
+     * @throws NullPointerException if the key is null.
+     * @return if {@code lowerKey} is the BarTime of the lower key as given by
+     *         {@link #lowerEntry(BarTime)} and {@code duration} the duration of the
+     *         associated measurable ContentSet then:
+     *         </p>
+     *         {@code max(0, lowerKey + duration - key)}
+     */
     default BarTime lasting(BarTime key) {
         Objects.requireNonNull(key);
         Entry<BarTime, ContentSet<PrincipalItem>> lowerEntry = lowerEntry(key);
@@ -209,12 +230,26 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
         }
     }
 
+    /**
+     * The duration in which the next entry is occurring in the voice or the
+     * duration in which the capacity is reached if no higher entry is present.
+     *
+     * @param key the time that is checked for any higher items.
+     * @throws NullPointerException if the key is null.
+     * @return
+     */
     default BarTime next(BarTime key) {
         Objects.requireNonNull(key);
         BarTime higherKey = higherKey(key);
         return higherKey != null ? subtract(higherKey, key) : subtract(capacity(), key);
     }
 
+    /**
+     * The length of the voice as BarTime
+     *
+     * @return the last occurring BarTime plus the given measurement of the
+     *         associated ContentSet or zero if the voice is empty.
+     */
     default BarTime length() {
         if (isEmpty()) {
             return BarTime.ZERO;
@@ -225,15 +260,33 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
     }
 
     /**
-     *
+     * A ContentSet is a {@link Collection} of {@linkplain ContentItem
+     * ContentItems}. A ContentSet pools all ContentItems that logically are tied
+     * together as in a chord. Therefore 
      *
      * @param <T>
      */
     interface ContentSet<T extends ContentItem> extends Set<T>, Measurable {
 
+        @Override
+        boolean add(T e);
+
+        List<ContentSet<OptionalItem>> getDecoration();
+
+        default <E extends ContentSet<OptionalItem>> void addOptional(E optionalSet) {
+            getDecoration().add(optionalSet);
+        }
+
+        default <E extends ContentSet<OptionalItem>> void addOptional(int i, E optionalSet) {
+            getDecoration().add(i, optionalSet);
+        }
+
+        default void eraseDecorations() {
+            getDecoration().clear();
+        }
+
         default SortedSet<Pitch> getPitches() {
-            return stream().map(ContentItem::getPitch).filter(Optional::isPresent).map(Optional::get)
-                    .collect(Collectors.toCollection(TreeSet::new));
+            return stream().map(ContentItem::getPitch).flatMap(Optional::stream).collect(toCollection(TreeSet::new));
         }
 
         default BarTime getDuration() {
@@ -249,7 +302,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
         }
 
         default boolean isChord() {
-            return getPitches().size() > 1;
+            return stream().filter(i -> i.getPitch().isPresent()).limit(2).count() > 1;
         }
     }
 }

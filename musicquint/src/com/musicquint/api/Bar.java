@@ -1,10 +1,11 @@
 package com.musicquint.api;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface Bar extends List<Voice> {
 
-    Integer getBarNumber();
+    Optional<Integer> getBarNumber();
 
     void setBarNumber(Integer barNumber);
 
@@ -12,7 +13,7 @@ public interface Bar extends List<Voice> {
 
     BarAttributeMap getAttributeMap();
 
-    Time getTime();
+    Optional<Time> getTime();
 
     void setTime(Time time);
 
