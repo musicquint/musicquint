@@ -3,7 +3,6 @@ package com.musicquint.api;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * A BarTime represents a duration of an BarItem or are specific time event in a
@@ -450,7 +449,9 @@ public final class BarTime implements Measurable, Comparable<BarTime> {
      * @return the minimum of both BarTimes.
      */
     public static BarTime min(BarTime t1, BarTime t2) {
-        return Stream.of(t1, t2).min(Measurable.timeComparator()).get();
+        Objects.requireNonNull(t1, "Cannot compare the BarTimes. The first argument is null.");
+        Objects.requireNonNull(t2, "Cannot compare the BarTimes. The second argument is null.");
+        return t1.isLessOrEqual(t2) ? t1 : t2;
     }
 
     /**
@@ -459,7 +460,9 @@ public final class BarTime implements Measurable, Comparable<BarTime> {
      * @return the maximum of both BarTimes.
      */
     public static BarTime max(BarTime t1, BarTime t2) {
-        return Stream.of(t1, t2).max(Measurable.timeComparator()).get();
+        Objects.requireNonNull(t1, "Cannot compare the BarTimes. The first argument is null.");
+        Objects.requireNonNull(t2, "Cannot compare the BarTimes. The second argument is null.");
+        return t1.isGreaterOrEqual(t2) ? t1 : t2;
     }
 
     @Override
@@ -480,6 +483,15 @@ public final class BarTime implements Measurable, Comparable<BarTime> {
      */
     public int[] toInt() {
         return new int[] { numerator, denominator };
+    }
+
+    /**
+     * Returns an double equal to {@code numerator / denominator}.
+     *
+     * @return {@code numerator / denominator}.
+     */
+    public double toDouble() {
+        return (double) numerator / denominator;
     }
 
     /**
