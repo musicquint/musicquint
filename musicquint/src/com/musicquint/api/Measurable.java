@@ -12,11 +12,11 @@ import java.util.Objects;
  * implemented through an anonymous class or a lambda it fulfills the
  * requirement of a functional interface and is annotated as such.
  * </p>
- * The Measurable interface offers a {@linkplain #timeComparator()
- * canonical Comparator} which imposes an natural ordering on all Measurable
- * objects. As this order cannot be guaranteed to be consistent with equals we
- * refrained from extending this interface from the {@link Comparable}
- * interface. Additionally some default methods are given for convenience.
+ * The Measurable interface offers a {@linkplain #timeComparator() canonical
+ * Comparator} which imposes an natural ordering on all Measurable objects. As
+ * this order cannot be guaranteed to be consistent with equals we refrained
+ * from extending this interface from the {@link Comparable} interface.
+ * Additionally some default methods are given for convenience.
  * </p>
  * Trivially the {@link BarTime} class itself is Measurable. Also the comparator
  * induced by the Measurable interface is consistent with equals in BarTime and
@@ -64,17 +64,17 @@ public interface Measurable {
         return (m1, m2) -> {
             Objects.requireNonNull(m1, "Cannot compare. The first argument is null.");
             Objects.requireNonNull(m2, "Cannot compare. The second argument is null.");
-            long numerator = m1.getDuration().getNumerator();
-            long denominator = m1.getDuration().getDenominator();
-            long otherNumerator = m2.getDuration().getNumerator();
-            long otherDenominator = m2.getDuration().getDenominator();
-            return Long.compare(numerator * otherDenominator, otherNumerator * denominator);
+            int numerator = m1.getDuration().getNumerator();
+            int denominator = m1.getDuration().getDenominator();
+            int otherNumerator = m2.getDuration().getNumerator();
+            int otherDenominator = m2.getDuration().getDenominator();
+            return Long.compare((long) numerator * otherDenominator, (long) otherNumerator * denominator);
         };
     }
 
     /**
      * Returns true if the Measurable {@code other} is greater according to the
-     * canonical Comparator given in {@link Measurable} otherwise false.
+     * Comparator given in {@link Measurable} otherwise false.
      *
      * @param other the other given Measurable for comparison.
      * @return {@code true} if {@code this} is greater than {@code other}, otherwise
@@ -89,8 +89,8 @@ public interface Measurable {
 
     /**
      * Returns true if the Measurable {@code other} is greater or equal in
-     * comparison according to the canonical Comparator given in {@link Measurable}
-     * otherwise false.
+     * comparison according to the Comparator given in {@link Measurable} otherwise
+     * false.
      *
      * @param other the other given Measurable for comparison.
      * @return {@code true} if {@code this} is greater or equal than {@code other},
@@ -105,7 +105,7 @@ public interface Measurable {
 
     /**
      * Returns true if the Measurable {@code other} is less according to the
-     * canonical Comparator given in {@link Measurable} otherwise false.
+     * Comparator given in {@link Measurable} otherwise false.
      *
      * @param other the other given Measurable for comparison.
      * @return {@code true} if {@code this} is less than {@code other}, otherwise
@@ -119,8 +119,7 @@ public interface Measurable {
 
     /**
      * Returns true if the Measurable {@code other} is less or equal in comparison
-     * according to the canonical Comparator given in {@link Measurable} otherwise
-     * false.
+     * according to the Comparator given in {@link Measurable} otherwise false.
      *
      * @param other the other given Measurable for comparison.
      * @return {@code true} if {@code this} is less or equal than {@code other},

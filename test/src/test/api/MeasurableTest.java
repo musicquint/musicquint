@@ -27,7 +27,7 @@ class MeasurableTest {
     Measurable m3 = () -> BarTime.HALF;
 
     @Test
-    void testCanonicalComparatorComparesEqual() {
+    void testComparatorComparesEqual() {
         Measurable zero1 = BarTime.ZERO;
         Measurable zero2 = () -> BarTime.ZERO;
         assertEquals(0, timeComparator().compare(zero1, zero2));
@@ -35,35 +35,35 @@ class MeasurableTest {
     }
 
     @Test
-    void testCanonicalComparatorComparesAsLess() {
+    void testComparatorComparesAsLess() {
         assertEquals(-1, timeComparator().compare(BarTime.ZERO, BarTime.EIGHTH));
     }
 
     @Test
-    void testCanonicalComparatorComparesAsGreater() {
+    void testComparatorComparesAsGreater() {
         assertEquals(1, timeComparator().compare(BarTime.ZERO, BarTime.of(-1)));
     }
 
     @Test
-    void testCanonicalComparatorSymmetry() {
+    void testComparatorSymmetry() {
         assertEquals(-1, timeComparator().compare(BarTime.ZERO, BarTime.EIGHTH));
         assertEquals(1, timeComparator().compare(BarTime.EIGHTH, BarTime.ZERO));
     }
 
     @Test
-    void testCanonicalComparatorTransivity() {
+    void testComparatorTransivity() {
         assertEquals(1, timeComparator().compare(BarTime.EIGHTH, BarTime.ZERO));
         assertEquals(1, timeComparator().compare(BarTime.QUARTER, BarTime.EIGHTH));
         assertEquals(1, timeComparator().compare(BarTime.QUARTER, BarTime.ZERO));
     }
 
     @Test
-    void testCanonicalComparatorDifferentMeasurables() {
+    void testComparatorDifferentMeasurables() {
         assertEquals(1, timeComparator().compare(m1, m2));
     }
 
     @Test
-    void testCanonicalComparatorNullPointerExceptions() {
+    void testComparatorNullPointerExceptions() {
         NullPointerException e1 = assertThrows(NullPointerException.class,
                 () -> timeComparator().compare(null, BarTime.ZERO));
         NullPointerException e2 = assertThrows(NullPointerException.class,
@@ -71,6 +71,13 @@ class MeasurableTest {
 
         assertEquals("Cannot compare. The first argument is null.", e1.getMessage());
         assertEquals("Cannot compare. The second argument is null.", e2.getMessage());
+    }
+
+    @Test
+    void testComparatorLargeIntegers() {
+        BarTime t1 = BarTime.of(2000000000, 1);
+        BarTime t2 = BarTime.of(1, Integer.MAX_VALUE);
+        assertEquals(1, timeComparator().compare(t1, t2));
     }
 
     @Test
