@@ -2,8 +2,6 @@ package com.musicquint.api;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.ToLongFunction;
 
 /**
  * The interface requires each objects of a class that implements it to
