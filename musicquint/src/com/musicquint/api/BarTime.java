@@ -465,6 +465,34 @@ public final class BarTime implements Measurable, Comparable<BarTime> {
         return t1.isGreaterOrEqual(t2) ? t1 : t2;
     }
 
+    /**
+     * Returns true if the instance lies in the closed interval from
+     * {@code fromTime} to {@code toTime}. As the interval is closed the interval
+     * boundaries are included in the interval.
+     *
+     * @param fromTime the left boundary of the closed interval.
+     * @param toTime   the right boundary of the closed interval.
+     * @return true if {@code this} lies in the closed interval, otherwise false.
+     * @throws NullPointerException if {@code fromTime} or {@code toTime} is null.
+     */
+    public boolean isInClosedInterval(BarTime fromTime, BarTime toTime) {
+        return isGreaterOrEqual(fromTime) && isLessOrEqual(toTime);
+    }
+
+    /**
+     * Returns true if the instance lies in the open interval from {@code fromTime}
+     * to {@code toTime}. As the interval is open the interval boundaries are
+     * excluded from the interval.
+     *
+     * @param fromTime the left boundary of the open interval.
+     * @param toTime   the right boundary of the open interval.
+     * @return true if {@code this} lies in the open interval, otherwise false.
+     * @throws NullPointerException if {@code fromTime} or {@code toTime} is null.
+     */
+    public boolean isInOpenInterval(BarTime fromTime, BarTime toTime) {
+        return isGreater(fromTime) && isLess(toTime);
+    }
+
     @Override
     public BarTime getDuration() {
         return this;
