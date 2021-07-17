@@ -2,6 +2,8 @@ package com.musicquint.api;
 
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.ToLongFunction;
 
 /**
  * The interface requires each objects of a class that implements it to
@@ -64,11 +66,11 @@ public interface Measurable {
         return (m1, m2) -> {
             Objects.requireNonNull(m1, "Cannot compare. The first argument is null.");
             Objects.requireNonNull(m2, "Cannot compare. The second argument is null.");
-            int numerator = m1.getDuration().getNumerator();
-            int denominator = m1.getDuration().getDenominator();
-            int otherNumerator = m2.getDuration().getNumerator();
-            int otherDenominator = m2.getDuration().getDenominator();
-            return Integer.compare(numerator * otherDenominator, otherNumerator * denominator);
+            long numerator = m1.getDuration().getNumerator();
+            long denominator = m1.getDuration().getDenominator();
+            long otherNumerator = m2.getDuration().getNumerator();
+            long otherDenominator = m2.getDuration().getDenominator();
+            return Long.compare(numerator * otherDenominator, otherNumerator * denominator);
         };
     }
 
