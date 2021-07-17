@@ -12,7 +12,7 @@ import java.util.Objects;
  * implemented through an anonymous class or a lambda it fulfills the
  * requirement of a functional interface and is annotated as such.
  * </p>
- * The Measurable interface offers a {@linkplain #canonicalComparator()
+ * The Measurable interface offers a {@linkplain #timeComparator()
  * canonical Comparator} which imposes an natural ordering on all Measurable
  * objects. As this order cannot be guaranteed to be consistent with equals we
  * refrained from extending this interface from the {@link Comparable}
@@ -60,7 +60,7 @@ public interface Measurable {
      *         The comparator throws a {@link NullPointerException} if one of the
      *         arguments is null.
      */
-    static Comparator<Measurable> canonicalComparator() {
+    static Comparator<Measurable> timeComparator() {
         return (m1, m2) -> {
             Objects.requireNonNull(m1, "Cannot compare. The first argument is null.");
             Objects.requireNonNull(m2, "Cannot compare. The second argument is null.");
@@ -80,11 +80,11 @@ public interface Measurable {
      * @return {@code true} if {@code this} is greater than {@code other}, otherwise
      *         false.
      * @throws NullpointerException if other is null
-     * @see Measurable#canonicalComparator()
+     * @see Measurable#timeComparator()
      */
     default boolean isGreater(Measurable other) {
         Objects.requireNonNull(other, "The other Measurable is null.");
-        return canonicalComparator().compare(this, other) > 0;
+        return timeComparator().compare(this, other) > 0;
     }
 
     /**
@@ -96,11 +96,11 @@ public interface Measurable {
      * @return {@code true} if {@code this} is greater or equal than {@code other},
      *         otherwise false.
      * @throws NullpointerException if other is null
-     * @see Measurable#canonicalComparator()
+     * @see Measurable#timeComparator()
      */
     default boolean isGreaterOrEqual(Measurable other) {
         Objects.requireNonNull(other, "The other Measurable is null.");
-        return canonicalComparator().compare(this, other) >= 0;
+        return timeComparator().compare(this, other) >= 0;
     }
 
     /**
@@ -110,11 +110,11 @@ public interface Measurable {
      * @param other the other given Measurable for comparison.
      * @return {@code true} if {@code this} is less than {@code other}, otherwise
      *         false.
-     * @see Measurable#canonicalComparator()
+     * @see Measurable#timeComparator()
      */
     default boolean isLess(Measurable other) {
         Objects.requireNonNull(other, "The other Measurable is null.");
-        return canonicalComparator().compare(this, other) < 0;
+        return timeComparator().compare(this, other) < 0;
     }
 
     /**
@@ -126,36 +126,10 @@ public interface Measurable {
      * @return {@code true} if {@code this} is less or equal than {@code other},
      *         otherwise false.
      * @throws NullpointerException if other is null
-     * @see Measurable#canonicalComparator()
+     * @see Measurable#timeComparator()
      */
     default boolean isLessOrEqual(Measurable other) {
         Objects.requireNonNull(other, "The other Measurable is null.");
-        return canonicalComparator().compare(this, other) <= 0;
-    }
-
-    /**
-     * Returns the minimal Measurable according to the order induced. If both are
-     * equal according to the comparator the first argument is given back.
-     *
-     * @return the minimum of both measurable objects.
-     * @throws NullPointerException if the first or second argument is null.
-     */
-    static <T extends Measurable> T min(T t1, T t2) {
-        Objects.requireNonNull(t1, "Cannot compare. The first argument is null");
-        Objects.requireNonNull(t2, "Cannot compare. The second argument is null");
-        return t1.isLessOrEqual(t2) ? t1 : t2;
-    }
-
-    /**
-     * Returns the maximal Measurable according to the order induced. If both are
-     * equal according to the comparator the first argument is given back.
-     *
-     * @return the maximum of both measurable objects.
-     * @throws NullPointerException if the first or second argument is null.
-     */
-    static <T extends Measurable> T max(T t1, T t2) {
-        Objects.requireNonNull(t1, "Cannot compare. The first argument is null");
-        Objects.requireNonNull(t2, "Cannot compare. The second argument is null");
-        return t1.isGreaterOrEqual(t2) ? t1 : t2;
+        return timeComparator().compare(this, other) <= 0;
     }
 }

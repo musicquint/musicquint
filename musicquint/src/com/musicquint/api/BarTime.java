@@ -3,6 +3,7 @@ package com.musicquint.api;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * A BarTime represents a duration of an BarItem or are specific time event in a
@@ -414,7 +415,7 @@ public class BarTime implements Measurable, Comparable<BarTime> {
      * @return the minimum of both BarTimes.
      */
     public static BarTime min(BarTime t1, BarTime t2) {
-        return Measurable.min(t1, t2);
+        return Stream.of(t1, t2).min(Measurable.timeComparator()).get();
     }
 
     /**
@@ -423,7 +424,7 @@ public class BarTime implements Measurable, Comparable<BarTime> {
      * @return the maximum of both BarTimes.
      */
     public static BarTime max(BarTime t1, BarTime t2) {
-        return Measurable.max(t1, t2);
+        return Stream.of(t1, t2).max(Measurable.timeComparator()).get();
     }
 
     @Override
@@ -433,7 +434,7 @@ public class BarTime implements Measurable, Comparable<BarTime> {
 
     @Override
     public int compareTo(BarTime o) {
-        return Measurable.canonicalComparator().compare(this, o);
+        return Measurable.timeComparator().compare(this, o);
     }
 
     /**
@@ -452,7 +453,7 @@ public class BarTime implements Measurable, Comparable<BarTime> {
      *
      * @param i the first integer
      * @param j the second integer
-     * @return the greatest common factor
+     * @return the absolute value of the greatest common factor
      */
     public static int greatestCommonFactor(int i, int j) {
         if (i == 0 || j == 0) {
@@ -470,15 +471,18 @@ public class BarTime implements Measurable, Comparable<BarTime> {
     }
 
     /**
-     * Calculates the least common multiple of i and j
+     * Calculates the least common multiple of {@code i} and {@code j}.
      *
-     * @param i the first integer
-     * @param j the second integer
-     * @return the least common multiple of i and j.
-     * @throws ArithmeticException if both i and j are zero.
+     * @param i the first integer.
+     * @param j the second integer.
+     * @return the least common multiple of {@code i} and {@code j}.
      */
     public static int leastCommonMultiple(int i, int j) {
-        return (i * j) / greatestCommonFactor(i, j);
+        if (i == 0 || j == 0) {
+            return Math.max(Math.abs(i), Math.abs(j));
+        } else {
+            return (i * j) / greatestCommonFactor(i, j);
+        }
     }
 
     @Override

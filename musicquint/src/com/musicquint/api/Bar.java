@@ -3,7 +3,7 @@ package com.musicquint.api;
 import java.util.List;
 import java.util.Optional;
 
-public interface Bar extends List<Voice> {
+public interface Bar extends List<BarMap> {
 
     Optional<Integer> getBarNumber();
 

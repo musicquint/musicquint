@@ -1,36 +1,27 @@
 package com.musicquint.api;
 
-import static com.musicquint.api.BarTime.add;
-import static com.musicquint.api.BarTime.subtract;
-import static com.musicquint.api.Measurable.canonicalComparator;
-import static java.util.stream.Collectors.toCollection;
+import static com.musicquint.api.Measurable.timeComparator;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.NavigableMap;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * A Voice is a NavigableMap which maps BarTimes to sets containing
  * PrincipalItems. As per contract of a map a specific BarTime can only be
- * mapped to one such set. Such sets are defined as {@linkplain ContentSet
- * ContentSets} and offers a variety of default methods for convenience. Another
- * way to view a voice is to see it as NavigableMap which maps a BarTime to
- * multiple {@linkplain ContentItem ContentItems} to support this view the
- * interface offers additional methods {@link #put(BarTime, PrincipalItem)}, and
+ * mapped to one such set. Such sets are defined as
+ * {@linkplain MeasurableCollection ContentSets} and offers a variety of default
+ * methods for convenience. Another way to view a voice is to see it as
+ * NavigableMap which maps a BarTime to multiple {@linkplain ContentItem
+ * ContentItems} to support this view the interface offers additional methods
+ * {@link #put(BarTime, PrincipalItem)}, and
  * {@link #put(BarTime, OptionalItem)}.
  * </p>
- * As a {@link ContentSet} is also a {@linkplain Measurable} object special
- * constraints are put upon all ContentItem or ContentSet with a duration
- * {@code d} that are to be added into a Voice at any given BarTime {@code t}
- * (Note that we use the {@code +} and {@code -} operator as abbreviations for
- * the {@link BarTime#add(BarTime, BarTime)} and
+ * As a {@link MeasurableCollection} is also a {@linkplain Measurable} object
+ * special constraints are put upon all ContentItem or ContentSet with a
+ * duration {@code d} that are to be added into a Voice at any given BarTime
+ * {@code t} (Note that we use the {@code +} and {@code -} operator as
+ * abbreviations for the {@link BarTime#add(BarTime, BarTime)} and
  * {@link BarTime#subtract(BarTime, BarTime)} methods):
  * <ul>
  * <li>After adding the item to the voice no other item can be added to the
@@ -48,7 +39,7 @@ import java.util.stream.Stream;
  * well-stuffed, if {@code lasting(t) == next(t)} for every {@code t} in the
  * interval [0, {@link #capacity()}].
  */
-public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalItem>> {
+public interface Voice extends BarMap<Voice.MeasurableCollection<PrincipalItem>> {
 
     /**
      * Associates the key with the given ContentSet in the voice. To ensure
@@ -72,7 +63,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
      * @see #fits(BarTime, Measurable)
      */
     @Override
-    Voice.ContentSet<PrincipalItem> put(BarTime key, Voice.ContentSet<PrincipalItem> value);
+    Voice.MeasurableCollection<PrincipalItem> put(BarTime key, Voice.MeasurableCollection<PrincipalItem> value);
 
     /**
      * Associates the key with a ContentSet that contains the given PrincipalItem.
@@ -158,7 +149,7 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
      */
     default void put(BarTime key, Collection<? extends PrincipalItem> items) {
         Objects.requireNonNull(items);
-        items.stream().sorted(canonicalComparator().reversed()).forEach(i -> put(key, i));
+        items.stream().sorted(timeComparator().reversed()).forEach(i -> put(key, i));
     }
 
     /**
@@ -183,126 +174,14 @@ public interface Voice extends NavigableMap<BarTime, Voice.ContentSet<PrincipalI
      * @see #put(BarTime, PrincipalItem)
      */
     default void put(BarTime key, PrincipalItem... items) {
-        put(key, Stream.of(items).collect(Collectors.toSet()));
+        Objects.requireNonNull(items, "The given array of items is null");
+        Stream.of(items).sorted(timeComparator().reversed()).forEach(i -> put(key, i));
     }
 
-    /**
-     * Returns true if a ContentSet with the same measurement of the given
-     * Measurable value would fit in the voice. Note that this method check the
-     * stricter condition for PrincipalItems. For OptionalItems the weaker condition
-     * {@code lasting(key} == BarTime.ZERO} suffices.
-     *
-     * @param key   the time at which the value would be added to the voice
-     * @param value a measurable value with a given measurement.
-     * @throws NullPointerException if the key or value is null.
-     * @return true if the Measurable item would fit into the voice otherwise false.
-     * @see #lasting(BarTime)
-     */
-    default boolean fits(BarTime key, Measurable value) {
-        Objects.requireNonNull(key);
-        Objects.requireNonNull(value);
-        return lasting(key).equals(BarTime.ZERO) && value.isLessOrEqual(next(key));
-    }
-
-    /**
-     * Returns the duration for which a lower item has still a lasting effect on the
-     * voice. Any item that is added to a voice prohibits any further entries for
-     * the measured duration of the item. Therefore this methods imposes the
-     * condition for all items that are to be added to the voice that
-     * {@code lasting(key) == BarTime.ZERO}.
-     *
-     * @param key the time that is checked for any lasting impact of a lower item.
-     * @throws NullPointerException if the key is null.
-     * @return if {@code lowerKey} is the BarTime of the lower key as given by
-     *         {@link #lowerEntry(BarTime)} and {@code duration} the duration of the
-     *         associated measurable ContentSet then:
-     *         </p>
-     *         {@code max(0, lowerKey + duration - key)}
-     */
-    default BarTime lasting(BarTime key) {
-        Objects.requireNonNull(key);
-        Entry<BarTime, ContentSet<PrincipalItem>> lowerEntry = lowerEntry(key);
-        if (lowerEntry == null) {
-            return BarTime.ZERO;
-        } else {
-            BarTime endLower = add(lowerEntry.getKey(), lowerEntry.getValue());
-            return BarTime.max(BarTime.ZERO, subtract(endLower, key));
-        }
-    }
-
-    /**
-     * The duration in which the next entry is occurring in the voice or the
-     * duration in which the capacity is reached if no higher entry is present.
-     *
-     * @param key the time that is checked for any higher items.
-     * @throws NullPointerException if the key is null.
-     * @return
-     */
-    default BarTime next(BarTime key) {
-        Objects.requireNonNull(key);
-        BarTime higherKey = higherKey(key);
-        return higherKey != null ? subtract(higherKey, key) : subtract(capacity(), key);
-    }
-
-    /**
-     * The length of the voice as BarTime
-     *
-     * @return the last occurring BarTime plus the given measurement of the
-     *         associated ContentSet or zero if the voice is empty.
-     */
-    default BarTime length() {
-        if (isEmpty()) {
-            return BarTime.ZERO;
-        } else {
-            Entry<BarTime, ContentSet<PrincipalItem>> lastEntry = lastEntry();
-            return add(lastEntry.getKey(), lastEntry.getValue());
-        }
-    }
-
-    /**
-     * A ContentSet is a {@link Collection} of {@linkplain ContentItem
-     * ContentItems}. A ContentSet pools all ContentItems that logically are tied
-     * together as in a chord. Therefore 
-     *
-     * @param <T>
-     */
-    interface ContentSet<T extends ContentItem> extends Set<T>, Measurable {
-
-        @Override
-        boolean add(T e);
-
-        List<ContentSet<OptionalItem>> getDecoration();
-
-        default <E extends ContentSet<OptionalItem>> void addOptional(E optionalSet) {
-            getDecoration().add(optionalSet);
-        }
-
-        default <E extends ContentSet<OptionalItem>> void addOptional(int i, E optionalSet) {
-            getDecoration().add(i, optionalSet);
-        }
-
-        default void eraseDecorations() {
-            getDecoration().clear();
-        }
-
-        default SortedSet<Pitch> getPitches() {
-            return stream().map(ContentItem::getPitch).flatMap(Optional::stream).collect(toCollection(TreeSet::new));
-        }
+    interface MeasurableCollection<T extends Measurable> extends Collection<T>, Measurable {
 
         default BarTime getDuration() {
-            return stream().max(Measurable.canonicalComparator()).map(Measurable::getDuration).orElse(BarTime.ZERO);
-        }
-
-        default boolean isPitched() {
-            return stream().anyMatch(ContentItem::isPitched);
-        }
-
-        default boolean isRest() {
-            return !isPitched() && !isEmpty();
-        }
-
-        default boolean isChord() {
-            return stream().filter(i -> i.getPitch().isPresent()).limit(2).count() > 1;
+            return stream().max(timeComparator()).map(Measurable::getDuration).orElse(BarTime.ZERO);
         }
     }
 }
