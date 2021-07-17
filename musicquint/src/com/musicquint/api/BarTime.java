@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  * @see Measurable
  * @see Comparable
  */
-public class BarTime implements Measurable, Comparable<BarTime> {
+public final class BarTime implements Measurable, Comparable<BarTime> {
 
     /**
      * Object pool for caching all BarTimes.
@@ -164,22 +164,22 @@ public class BarTime implements Measurable, Comparable<BarTime> {
     }
 
     /**
-     * Static factory method that returns a BarTime with a completely shortened
+     * Static factory method that returns a BarTime with a completely irreducible
      * fraction representation that is equal to the fraction of
      * {@code enumerator/denominator}. If such a {@code BarTime} has already been
-     * created the same object is returned. Otherwise such a {@code BarTime} is
+     * created this same object is returned. Otherwise such a {@code BarTime} is
      * created and cached.
      *
-     * @return a BarTime in a completely shortened form.
+     * @return a BarTime in a completely irreducible form.
      * @throws IllegalArgumentException if the denominator is zero.
      */
     public static BarTime of(int numerator, int denominator) {
-        // The denominator cannot be zero
+        // The denominator cannot be zero.
         if (denominator == 0) {
-            throw new IllegalArgumentException("A BarTime cannot have denominator zero");
+            throw new IllegalArgumentException("A BarTime cannot have denominator zero.");
         }
         // Calculate the greatest common factor. The gcf cannot be zero as both numbers
-        // cannot be zero
+        // cannot be zero.
         int gcf = greatestCommonFactor(numerator, denominator);
 
         int timeNum, timeDenom;
@@ -233,7 +233,7 @@ public class BarTime implements Measurable, Comparable<BarTime> {
 
     /**
      * A BarTime is represented by a fraction. This method returns the denominator
-     * of this representation
+     * of this representation.
      *
      * @return the denominator of the BarTime.
      */
@@ -242,15 +242,16 @@ public class BarTime implements Measurable, Comparable<BarTime> {
     }
 
     /**
-     * Returns a BarTime equal to the sum of both BarTimes
+     * Returns a BarTime equal to the sum of both BarTimes.
      *
-     * @param t1
-     * @param t2
-     * @return the sum of time1 and time2.
+     * @param t1 the first summand.
+     * @param t2 the second summand.
+     * @return the sum of {@code t1} and {@code t2}.
+     * @throws NullPointerException if {@code t1} or {@code t2} is null.
      */
     public static BarTime add(BarTime t1, BarTime t2) {
-        Objects.requireNonNull(t1, "Cannot add the BarTimes. The first argument is null");
-        Objects.requireNonNull(t2, "Cannot add the BarTimes. The second argument is null");
+        Objects.requireNonNull(t1, "Cannot add the BarTimes. The first argument is null.");
+        Objects.requireNonNull(t2, "Cannot add the BarTimes. The second argument is null.");
         int lcm = leastCommonMultiple(t1.getDenominator(), t2.getDenominator());
 
         int factor1 = lcm / t1.getDenominator();
@@ -264,37 +265,44 @@ public class BarTime implements Measurable, Comparable<BarTime> {
 
     /**
      * Returns a BarTime equal to the sum of this BarTime and the given argument.
-     * The method makes use of the static {@code add} method and therefore does not
-     * modify the given instances in any form.
+     * The method makes use of the static {@link #add(BarTime, BarTime)} method and
+     * therefore does not modify the given instances in any form.
      *
-     * @param other the given BarTime
-     * @return the sum of {@code this} and {@code other}
+     * @param other the given BarTime.
+     * @return the sum of {@code this} and {@code other}.
+     * @throws NullPointerException if {@code other} is null.
      */
     public BarTime add(BarTime other) {
+        Objects.requireNonNull(other, "The given BarTime is null.");
         return add(this, other);
     }
 
     /**
-     * Returns a BarTime that is equal to the sum of both measurements of t1 and t2.
+     * Returns a BarTime that is equal to the sum of both measurements of {@code m1}
+     * and {@code m2}.
      *
-     * @param t1 the first TimeMeasurable object
-     * @param t2 the second TimeMeasurable object
+     * @param m1 the first Measurable object.
+     * @param m2 the second Measurable object.
      * @return the sum of both associated BarTimes.
+     * @throws NullPointerException if {@code m1} or {@code m2} is null.
      */
-    public static BarTime add(Measurable t1, Measurable t2) {
-        return add(t1.getDuration(), t2.getDuration());
+    public static BarTime add(Measurable m1, Measurable m2) {
+        Objects.requireNonNull(m1, "Cannot add the Measurables. The first argument is null.");
+        Objects.requireNonNull(m2, "Cannot add the Measurables. The second argument is null.");
+        return add(m1.getDuration(), m2.getDuration());
     }
 
     /**
-     * Returns a BarTime equal to the difference of both BarTimes
+     * Returns a BarTime equal to the difference of both BarTimes.
      *
-     * @param t1
-     * @param t2
-     * @return the difference of time1 and time2.
+     * @param t1 the first differentiator.
+     * @param t2 the second differentiator.
+     * @return the difference of {@codet1} and {@code t2}.
+     * @throws NullPointerException if {@codet1} or {@code t2} is null.
      */
     public static BarTime subtract(BarTime t1, BarTime t2) {
-        Objects.requireNonNull(t1, "Cannot subtract the BarTimes. The first argument is null");
-        Objects.requireNonNull(t2, "Cannot subtract the BarTimes. The second argument is null");
+        Objects.requireNonNull(t1, "Cannot subtract the BarTimes. The first argument is null.");
+        Objects.requireNonNull(t2, "Cannot subtract the BarTimes. The second argument is null.");
         int lcm = leastCommonMultiple(t1.getDenominator(), t2.getDenominator());
 
         int factor1 = lcm / t1.getDenominator();
@@ -308,105 +316,132 @@ public class BarTime implements Measurable, Comparable<BarTime> {
 
     /**
      * Returns a BarTime equal to the difference of this BarTime and the given
-     * argument. The method makes use of the static {@code subtract} method and
-     * therefore does not modify the given instances in any form.
+     * argument. The method makes use of the static
+     * {@link #subtract(BarTime, BarTime)} method and therefore does not modify the
+     * given instances in any form.
      *
-     * @param other
-     * @return the difference of {@code this} and {@code other}
+     * @param other the other given differentiator.
+     * @return the difference of {@code this} and {@code other}.
+     * @throws NullPointerException if {@code other} is null.
      */
     public BarTime subtract(BarTime other) {
+        Objects.requireNonNull(other, "The given BarTime is null.");
         return subtract(this, other);
     }
 
     /**
-     * Returns a BarTime equal to the difference of the measuraed BarTimes of t1 and
-     * t2. The method makes use of the static {@code subtract} method and therefore
-     * does not modify the given instances in any form.
+     * Returns a BarTime equal to the difference of the measured BarTimes of
+     * {@code m1} and {@code m2}. The method makes use of the static
+     * {@code subtract} method and therefore does not modify the given instances in
+     * any form.
      *
-     * @param other
-     * @return the difference of {@code t1} and {@code t2}
+     * @param m1 the first Measurable object.
+     * @param m2 the second Measurable object.
+     * @return the difference of both associated BarTimes.
+     * @throws NullPointerException if {@code m1} or {@code m2} is null.
      */
-    public static BarTime subtract(Measurable t1, Measurable t2) {
-        return subtract(t1.getDuration(), t2.getDuration());
+    public static BarTime subtract(Measurable m1, Measurable m2) {
+        Objects.requireNonNull(m1, "Cannot subtract the Measurables. The first argument is null.");
+        Objects.requireNonNull(m2, "Cannot subtract the Measurables. The second argument is null.");
+        return subtract(m1.getDuration(), m2.getDuration());
     }
 
     /**
-     * Returns a BarTime equal to the fraction of both BarTimes
+     * Returns a BarTime equal to the multiplication of both BarTimes.
      *
-     * @param t1
-     * @param t2
-     * @return the fraction of
-     * @return the difference of
-     */
-    public static BarTime divide(BarTime t1, BarTime t2) {
-        Objects.requireNonNull(t1, "Cannot divide the BarTimes. The first argument is null");
-        Objects.requireNonNull(t2, "Cannot divide the BarTimes. The second argument is null");
-        int enumerator = t1.getNumerator() * t2.getDenominator();
-        int denominator = t1.getDenominator() * t2.getNumerator();
-        return BarTime.of(enumerator, denominator);
-    }
-
-    /**
-     * Returns a BarTime equal to the fractions of this BarTime and the given
-     * argument. The method makes use of the static {@code divide} method and
-     * therefore does not modify the given instances in any form.
-     *
-     * @param other
-     * @return the fraction of {@code this} and {@code other}
-     */
-    public BarTime divide(BarTime other) {
-        return divide(this, other);
-    }
-
-    /**
-     * Returns a BarTime equal to the fractions of the measured BarTimes of t1 and
-     * t2. The method makes use of the static {@code divide} method and therefore
-     * does not modify the given instances in any form.
-     *
-     * @param t1
-     * @param t2
-     * @return the fraction of {@code t1} and {@code t2}
-     */
-    public BarTime divide(Measurable t1, Measurable t2) {
-        return divide(t1.getDuration(), t2.getDuration());
-    }
-
-    /**
-     * Returns a BarTime equal to the multiplication of both BarTimes
-     *
-     * @param t1
-     * @param t2
-     * @return the product of time1 and time2
+     * @param t1 the first multiplicand.
+     * @param t2 the first multiplicand.
+     * @return the product of {@code t1} and {@code t2}.
+     * @throws NullPointerException if {@code t1} or {@code t2} is null.
      */
     public static BarTime multiply(BarTime t1, BarTime t2) {
-        Objects.requireNonNull(t1, "Cannot multiply the BarTimes. The first argument is null");
-        Objects.requireNonNull(t2, "Cannot multiply the BarTimes. The second argument is null");
+        Objects.requireNonNull(t1, "Cannot multiply the BarTimes. The first argument is null.");
+        Objects.requireNonNull(t2, "Cannot multiply the BarTimes. The second argument is null.");
         int enumerator = t1.getNumerator() * t2.getNumerator();
         int denominator = t1.getDenominator() * t2.getDenominator();
         return BarTime.of(enumerator, denominator);
     }
 
     /**
-     * Returns a BarTime equal to the multiplication of both BarTimes
+     * Returns a BarTime equal to the multiplication of both BarTimes.
      *
-     * @param other
-     * @return the product of {@code this} and {@code other}
+     * @param other the other given multiplicand.
+     * @return the product of {@code this} and {@code other}.
+     * @throws NullPointerException if {@code other} is null..
      */
     public BarTime multiply(BarTime other) {
+        Objects.requireNonNull(other, "The given BarTime is null.");
         return multiply(this, other);
     }
 
     /**
-     * Returns a BarTime equal to the multiplication of the measured BarTimes of t1
-     * and t2. The method makes use of the static {@code divide} method and
-     * therefore does not modify the given instances in any form.
+     * Returns a BarTime equal to the multiplication of the measured BarTimes of
+     * {@code m1} and {@code m2}. The method makes use of the static {@code divide}
+     * method and therefore does not modify the given instances in any form.
      *
-     * @param t1
-     * @param t2
-     * @return the fraction of {@code t1} and {@code t2}
+     * @param m1 the first Measurable object.
+     * @param m2 the second Measurable object.
+     * @return the product of {@code m1} and {@code m2}
+     * @throws NullPointerException if {@code m1} or {@code m2} is null.
      */
-    public static BarTime multiply(Measurable t1, Measurable t2) {
-        return multiply(t1.getDuration(), t2.getDuration());
+    public static BarTime multiply(Measurable m1, Measurable m2) {
+        Objects.requireNonNull(m1, "Cannot multiply the Measurables. The first argument is null.");
+        Objects.requireNonNull(m2, "Cannot multiply the Measurables. The second argument is null.");
+        return multiply(m1.getDuration(), m2.getDuration());
+    }
+
+    /**
+     * Returns a BarTime equal to the fraction of both BarTimes.
+     *
+     * @param t1 the first factor.
+     * @param t2 the second factor.
+     * @return the fraction of {@code t1} and {@code t2}.
+     * @throws NullPointerException if {@code t1} or {@code t2} is null.
+     * @throws ArithmeticException  if {@code t2} equals {@code BarTime.ZERO}.
+     */
+    public static BarTime divide(BarTime t1, BarTime t2) {
+        Objects.requireNonNull(t1, "Cannot divide the BarTimes. The first argument is null.");
+        Objects.requireNonNull(t2, "Cannot divide the BarTimes. The second argument is null.");
+        if (t2.equals(BarTime.ZERO)) {
+            throw new ArithmeticException("Cannot divide by zero.");
+        }
+        int enumerator = t1.getNumerator() * t2.getDenominator();
+        int denominator = t1.getDenominator() * t2.getNumerator();
+        return BarTime.of(enumerator, denominator);
+    }
+
+    /**
+     * Returns a BarTime equal to the fractions of {@code this} BarTime and the
+     * given argument called {@code other}. The method makes use of the static
+     * {@code divide} method and therefore does not modify the given instances in
+     * any form.
+     *
+     * @param other the other given factor.
+     * @return the fraction of {@code this} and {@code other}.
+     * @throws NullPointerException if {@code other} is null.
+     * @throws ArithmeticException  if {@code other} equals {@code BarTime.ZERO}.
+     */
+    public BarTime divide(BarTime other) {
+        Objects.requireNonNull(other, "The given BarTime is null.");
+        return divide(this, other);
+    }
+
+    /**
+     * Returns a BarTime equal to the fractions of the measured BarTimes of
+     * {@code m1} and {@code m2}. The method makes use of the static {@code divide}
+     * method and therefore does not modify the given instances in any form.
+     *
+     * @param m1 the first Measurable object.
+     * @param m2 the second Measurable object.
+     * @return the fraction of {@code m1} and {@code m2}
+     * @throws NullPointerException if {@code m1} or {@code m2} is null.
+     * @throws ArithmeticException  if the measurement of {@code m2}
+     *                              {@code BarTime.ZERO}.
+     */
+    public static BarTime divide(Measurable m1, Measurable m2) {
+        Objects.requireNonNull(m1, "Cannot add the Measurables. The first argument is null.");
+        Objects.requireNonNull(m2, "Cannot add the Measurables. The second argument is null.");
+        return divide(m1.getDuration(), m2.getDuration());
     }
 
     /**
@@ -449,7 +484,8 @@ public class BarTime implements Measurable, Comparable<BarTime> {
 
     /**
      * Calculates the greatest common factor of i and j. The method relies on the
-     * Euclidean algorithm.
+     * Euclidean algorithm. If one of the integers is zero the biggest absolute
+     * value of both integers is returned.
      *
      * @param i the first integer
      * @param j the second integer
@@ -461,8 +497,9 @@ public class BarTime implements Measurable, Comparable<BarTime> {
         } else {
             int r0 = Math.max(Math.abs(i), Math.abs(j));
             int r1 = Math.min(Math.abs(i), Math.abs(j));
+            int newR0;
             while ((r0 % r1) != 0) {
-                int newR0 = r1;
+                newR0 = r1;
                 r1 = (r0 % r1);
                 r0 = newR0;
             }
@@ -471,49 +508,20 @@ public class BarTime implements Measurable, Comparable<BarTime> {
     }
 
     /**
-     * Calculates the least common multiple of {@code i} and {@code j}.
+     * Calculates the absolute value of the least common multiple of {@code i} and
+     * {@code j}.
      *
      * @param i the first integer.
      * @param j the second integer.
-     * @return the least common multiple of {@code i} and {@code j}.
+     * @return the absolute value of the least common multiple of {@code i} and
+     *         {@code j}.
      */
     public static int leastCommonMultiple(int i, int j) {
         if (i == 0 || j == 0) {
-            return Math.max(Math.abs(i), Math.abs(j));
-        } else {
-            return (i * j) / greatestCommonFactor(i, j);
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        if (numerator == 0) {
             return 0;
         } else {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + denominator;
-            result = prime * result + numerator;
-            return result;
+            return Math.abs((i * j) / greatestCommonFactor(i, j));
         }
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        BarTime other = (BarTime) obj;
-        if (numerator * other.denominator != other.numerator * denominator) {
-            return false;
-        }
-        return true;
     }
 
     @Override
