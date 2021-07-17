@@ -246,4 +246,66 @@ class BarMapTest {
         assertEquals(BarTime.of(7,4), bMap.next(BarTime.of(9,4)));
     }
 
+    @Test
+    void testLasting() {
+        BarMap<Measurable> bMap = createBarMapMockup();
+        bMap.put(BarTime.HALF, BarTime.EIGHTH);
+        assertEquals(BarTime.of(1,4), bMap.lasting(BarTime.of(9,4)));
+    }
+
+    @Test
+    void testLastingZero() {
+        BarMap<Measurable> bMap = createBarMapMockup();
+        bMap.put(BarTime.HALF, BarTime.EIGHTH);
+        assertEquals(BarTime.ZERO, bMap.lasting(BarTime.of(11,4)));
+    }
+
+    @Test
+    void testLastingZero2() {
+        BarMap<Measurable> bMap = createBarMapMockup();
+        bMap.put(BarTime.HALF, BarTime.EIGHTH);
+        assertEquals(BarTime.ZERO, bMap.lasting(BarTime.of(5,2)));
+    }
+
+    @Test
+    void testFitsTrueBeforeAnotherItem() {
+        BarMap<Measurable> bMap = createBarMapMockup();
+        bMap.put(BarTime.HALF, BarTime.EIGHTH);
+        assertEquals(true, bMap.fits(BarTime.THREE_EIGHTH, BarTime.EIGHTH));
+    }
+
+    @Test
+    void testFitsFalseBeforeAnotherItem() {
+        BarMap<Measurable> bMap = createBarMapMockup();
+        bMap.put(BarTime.HALF, BarTime.EIGHTH);
+        assertEquals(false, bMap.fits(BarTime.THREE_EIGHTH, BarTime.EIGHTH_DOT));
+    }
+
+    @Test
+    void testFitsfalseWhileItem() {
+        BarMap<Measurable> bMap = createBarMapMockup();
+        bMap.put(BarTime.HALF, BarTime.QUARTER);
+        assertEquals(false, bMap.fits(BarTime.of(5,2), BarTime.EIGHTH_DOT));
+    }
+
+    @Test
+    void testFitsfTrueAfterItem() {
+        BarMap<Measurable> bMap = createBarMapMockup();
+        bMap.put(BarTime.HALF, BarTime.EIGHTH);
+        assertEquals(true, bMap.fits(BarTime.of(5,2), BarTime.THREE_EIGHTH));
+    }
+
+    @Test
+    void testFitsfFalseAfterItem() {
+        BarMap<Measurable> bMap = createBarMapMockup();
+        bMap.put(BarTime.HALF, BarTime.EIGHTH);
+        assertEquals(false, bMap.fits(BarTime.of(5,2), BarTime.HALF));
+    }
+
+    @Test
+    void testFitsfFalseKeyLowerThanZero() {
+        BarMap<Measurable> bMap = createBarMapMockup();
+        bMap.put(BarTime.HALF, BarTime.EIGHTH);
+        assertEquals(false, bMap.fits(BarTime.of(-1,2), BarTime.HALF));
+    }
 }

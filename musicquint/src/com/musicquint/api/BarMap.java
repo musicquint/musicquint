@@ -34,18 +34,17 @@ import java.util.Objects;
 public interface BarMap<T extends Measurable> extends NavigableMap<BarTime, T> {
 
     /**
-     * Associates the key with the given Measurable item in the BarMap. To
-     * ensure consistency of data in the BarMap the given implementation must ensure
-     * that special constraint are always honored while adding data to the BarMap.
-     * Those can be checked with the default implementation of
+     * Associates the key with the given Measurable item in the BarMap. To ensure
+     * consistency of data in the BarMap the given implementation must ensure that
+     * special constraint are always honored while adding data to the BarMap. Those
+     * can be checked with the default implementation of
      * {@link #fits(BarTime, Measurable)}.
      *
-     * @param key   the BarTime with which the specified Measurable is to
-     *              be associated
-     * @param value the given Measurable that is to be mapped to the given
-     *              key
-     * @return the previous Measurable associated with {@code key}, or
-     *         {@code null} if there was no mapping for {@code key}.
+     * @param key   the BarTime with which the specified Measurable is to be
+     *              associated
+     * @param value the given Measurable that is to be mapped to the given key
+     * @return the previous Measurable associated with {@code key}, or {@code null}
+     *         if there was no mapping for {@code key}.
      * @throws NullPointerException          if the given key or value is null.
      * @throws IllegalStateException         if {@link #fits(BarTime, Measurable)}
      *                                       is false and for the key and value and
@@ -62,8 +61,8 @@ public interface BarMap<T extends Measurable> extends NavigableMap<BarTime, T> {
      * The capacity is an upper bound for all key that are to be inserted into the
      * BarMap. It is advised that the capacity is immutable to avoid the corruption
      * of data although it is not inconceivable that one might implement the
-     * capacity in such a way, that all BarMap entries are removed if they exceed the
-     * capacity of the BarMap after alteration.
+     * capacity in such a way, that all BarMap entries are removed if they exceed
+     * the capacity of the BarMap after alteration.
      *
      * @return the capacity of the BarMap as BarTime.
      */
@@ -78,13 +77,15 @@ public interface BarMap<T extends Measurable> extends NavigableMap<BarTime, T> {
      * @param key   the time at which the value would be added to the BarMap
      * @param value a measurable value with a given measurement.
      * @throws NullPointerException if the key or value is null.
-     * @return true if the Measurable item would fit into the BarMap otherwise false.
+     * @return true if the Measurable item would fit into the BarMap otherwise
+     *         false.
      * @see #lasting(BarTime)
      */
     default boolean fits(BarTime key, Measurable value) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
-        return lasting(key).equals(BarTime.ZERO) && value.isLessOrEqual(next(key));
+        return lasting(key).equals(BarTime.ZERO) && value.isLessOrEqual(next(key))
+                && key.isInClosedInterval(BarTime.ZERO, capacity());
     }
 
     /**
