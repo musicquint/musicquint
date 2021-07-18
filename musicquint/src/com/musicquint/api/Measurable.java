@@ -27,7 +27,7 @@ import java.util.Objects;
 public interface Measurable {
 
     /**
-     * Gives back the associated BarTime to the measurable object. The BarTime is
+     * Returns the associated BarTime to the measurable object. The BarTime is
      * also called the measurement of the measurable object. The implementor must
      * ensure that the null is not returned. Also it is advised but not necessary
      * that the BarTime returned is greater or equal to zero. As the interface is a
@@ -42,8 +42,8 @@ public interface Measurable {
     /**
      * Returns a {@link Comparator} which compares the measured BarTimes numerically
      * as rational numbers. Note that the comparator also allows for different
-     * implementation of the measurable interface to be compared and is not
-     * guaranteed to be consistent with equals. Nonetheless is the comparator
+     * implementation of the measurable interface to be compared and is <strong>not
+     * guaranteed to be consistent with equals</strong>. Nonetheless is the comparator
      * consistent with equals for the BarTime class and the implementation of the
      * {@link Comparable} interface in BarTime relies on this implementation.
      *

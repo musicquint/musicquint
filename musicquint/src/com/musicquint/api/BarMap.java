@@ -70,9 +70,7 @@ public interface BarMap<T extends Measurable> extends NavigableMap<BarTime, T> {
 
     /**
      * Returns true if the Measurable with the same measurement of the given
-     * Measurable value would fit in the BarMap. Note that this method check the
-     * stricter condition for PrincipalItems. For OptionalItems the weaker condition
-     * {@code lasting(key} == BarTime.ZERO} suffices.
+     * Measurable value would fit in the BarMap.
      *
      * @param key   the time at which the value would be added to the BarMap
      * @param value a measurable value with a given measurement.
@@ -84,8 +82,8 @@ public interface BarMap<T extends Measurable> extends NavigableMap<BarTime, T> {
     default boolean fits(BarTime key, Measurable value) {
         Objects.requireNonNull(key);
         Objects.requireNonNull(value);
-        return lasting(key).equals(BarTime.ZERO) && value.isLessOrEqual(next(key))
-                && key.isInClosedInterval(BarTime.ZERO, capacity());
+        return key.isInClosedInterval(BarTime.ZERO, capacity()) && lasting(key).equals(BarTime.ZERO)
+                && value.isLessOrEqual(next(key));
     }
 
     /**
