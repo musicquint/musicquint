@@ -1,6 +1,8 @@
 package com.musicquint.api;
 
 import java.util.EnumSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 //TODO documentation
 public enum Octave {
@@ -23,10 +25,32 @@ public enum Octave {
 
     FIVE_LINED(8);
 
+    public static final String REGEX = "(?<octave>(?<subsmall>,{1,3})|(?<lined>\'{1,5}))?";
+
+    public static final Pattern PATTERN = Pattern.compile(REGEX);
+
     private final int octaveNumber;
 
     private Octave(int i) {
         octaveNumber = i;
+    }
+
+    public static Octave parse(String string) {
+        Matcher matcher = PATTERN.matcher(string);
+        if (matcher.matches()) {
+            String subgreat = matcher.group("subsmall");
+            String lined = matcher.group("lined");
+            if (subgreat != null) {
+                return Octave.valueOf(3 - subgreat.length());
+            } else if(lined != null) {
+                return Octave.valueOf(3 + lined.length());
+            } else {
+                return Octave.SMALL;
+            }
+        } else {
+            throw new IllegalArgumentException(
+                    "The input " + string + " does not match the regular expression " + REGEX);
+        }
     }
 
     public static Octave valueOf(int i) {
@@ -38,14 +62,14 @@ public enum Octave {
     }
 
     public String getSimpleName() {
-        switch(this) {
+        switch (this) {
         case SUBCONTRA:
             return ",,,";
         case CONTRA:
             return ",,";
-        case SMALL:
-            return ",";
         case GREAT:
+            return ",";
+        case SMALL:
             return "";
         case ONE_LINED:
             return "'";

@@ -1,29 +1,42 @@
 package com.musicquint.api;
 
-import static java.util.Comparator.comparingInt;
-
-import java.util.Comparator;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Data structure for a pitch in the note system. Every Pitch consists of a
  * Step, an Alteration and an Octave.
  */
-public class Pitch implements Comparable<Pitch> {
+public class Pitch implements Pitched, Comparable<Pitch> {
 
-    private static final Comparator<Pitch> COMPARATOR = comparingInt((Pitch p) -> p.asInt())
-            .thenComparingInt(p -> p.getStep().asInt());
+    public static final String REGEX = "(?<pitch>" + Step.REGEX + Alter.REGEX + Octave.REGEX + ")";
 
-    private Step step;
+    public static final Pattern PATTERN = Pattern.compile(REGEX);
 
-    private Alter alter;
+    //Class fields
+    private final Step step;
 
-    private Octave octave;
+    private final Alter alter;
 
-    private Pitch(Builder builder) {
-        this.step = Objects.requireNonNull(builder.step);
-        this.alter = Objects.requireNonNullElse(builder.alter, Alter.NATURAL);
-        this.octave = Objects.requireNonNullElse(builder.octave, Octave.ONE_LINED);
+    private final Octave octave;
+
+    public Pitch(Step step, Alter alter, Octave octave) {
+        this.step = Objects.requireNonNull(step);
+        this.alter = Objects.requireNonNullElse(alter, Alter.NATURAL);
+        this.octave = Objects.requireNonNullElse(octave, Octave.ONE_LINED);
+    }
+
+    public static Pitch parse(String string) {
+        Matcher matcher = PATTERN.matcher(string);
+        if (matcher.matches()) {
+            String step = matcher.group("step");
+            String alter = Objects.requireNonNullElse(matcher.group("alter"), "");
+            String octave = Objects.requireNonNullElse(matcher.group("octave"), "");
+            return new Pitch(Step.parse(step), Alter.parse(alter), Octave.parse(octave));
+        } else {
+            throw new IllegalArgumentException("The input " + string + " does not match the pattern " + REGEX);
+        }
     }
 
     /**
@@ -36,34 +49,12 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     /**
-     * Setter for the step in the pitch. Throws a NullpointerException if the input
-     * variable is null
-     *
-     * @param step
-     * @throws NullPointerException
-     */
-    public void setStep(Step step) {
-        this.step = Objects.requireNonNull(step);
-    }
-
-    /**
      * Returns the alteration of the Pitch
      *
      * @return {@link Alter}
      */
     public Alter getAlter() {
         return alter;
-    }
-
-    /**
-     * Setter for the alteration in the pitch. Throws a NullpointerException if the
-     * input variable is null
-     *
-     * @param alter
-     * @throws NullPointerException
-     */
-    public void setAlter(Alter alter) {
-        this.alter = Objects.requireNonNull(alter);
     }
 
     /**
@@ -76,32 +67,12 @@ public class Pitch implements Comparable<Pitch> {
     }
 
     /**
-     * Setter for the octave in the pitch. Throws a NullpointerException if the
-     * input variable is null
-     *
-     * @param octave
-     * @throws NullPointerException
-     */
-    public void setOctave(Octave octave) {
-        this.octave = Objects.requireNonNull(octave);
-    }
-
-    /**
      * Every Pitch has an integer for Midi-output associated with it.
      *
      * @return
      */
     public int asInt() {
         return step.asInt() + alter.asInt() + octave.asInt() * 12;
-    }
-
-    @Override
-    public int compareTo(Pitch o) {
-        return COMPARATOR.compare(this, o);
-    }
-
-    public static Comparator<Pitch> comparator() {
-        return COMPARATOR;
     }
 
     @Override
@@ -112,6 +83,17 @@ public class Pitch implements Comparable<Pitch> {
         result = prime * result + ((octave == null) ? 0 : octave.hashCode());
         result = prime * result + ((step == null) ? 0 : step.hashCode());
         return result;
+    }
+
+    @Override
+    public Pitch getPitch() {
+        return this;
+    }
+
+    @Override
+    public int compareTo(Pitch o) {
+        Objects.requireNonNull(o, "The given pitch is null.");
+        return Pitched.pitchedComparator().thenComparingInt(p -> p.getPitch().getAlter().asInt()).compare(this, o);
     }
 
     @Override
@@ -141,33 +123,5 @@ public class Pitch implements Comparable<Pitch> {
     @Override
     public String toString() {
         return step.getSimpleName() + alter.getSimpleName() + octave.getSimpleName();
-    }
-
-    public static class Builder {
-
-        private Step step;
-
-        private Alter alter;
-
-        private Octave octave;
-
-        public Builder step(Step step) {
-            this.step = step;
-            return this;
-        }
-
-        public Builder octave(Octave octave) {
-            this.octave = octave;
-            return this;
-        }
-
-        public Builder alter(Alter alter) {
-            this.alter = alter;
-            return this;
-        }
-
-        public Pitch build() {
-            return new Pitch(this);
-        }
     }
 }
