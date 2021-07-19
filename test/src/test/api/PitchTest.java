@@ -38,5 +38,4 @@ class PitchTest {
                 + "(?<pitch>(?<step>[a-g|A-G])(?<alter>(?<sharp>s{1,2})|(?<flat>f{1,2}))?(?<octave>(?<subsmall>,{1,3})|(?<lined>'{1,5}))?)",
                 e.getMessage());
     }
-
 }

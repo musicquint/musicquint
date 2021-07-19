@@ -8,13 +8,13 @@ import java.util.regex.Pattern;
  * Data structure for a pitch in the note system. Every Pitch consists of a
  * Step, an Alteration and an Octave.
  */
-public class Pitch implements Pitched, Comparable<Pitch> {
+public class Pitch implements Pitched {
 
     public static final String REGEX = "(?<pitch>" + Step.REGEX + Alter.REGEX + Octave.REGEX + ")";
 
     public static final Pattern PATTERN = Pattern.compile(REGEX);
 
-    //Class fields
+    // Class fields
     private final Step step;
 
     private final Alter alter;
@@ -24,7 +24,7 @@ public class Pitch implements Pitched, Comparable<Pitch> {
     public Pitch(Step step, Alter alter, Octave octave) {
         this.step = Objects.requireNonNull(step);
         this.alter = Objects.requireNonNullElse(alter, Alter.NATURAL);
-        this.octave = Objects.requireNonNullElse(octave, Octave.ONE_LINED);
+        this.octave = Objects.requireNonNullElse(octave, Octave.SMALL);
     }
 
     public static Pitch parse(String string) {
@@ -88,12 +88,6 @@ public class Pitch implements Pitched, Comparable<Pitch> {
     @Override
     public Pitch getPitch() {
         return this;
-    }
-
-    @Override
-    public int compareTo(Pitch o) {
-        Objects.requireNonNull(o, "The given pitch is null.");
-        return Pitched.pitchedComparator().thenComparingInt(p -> p.getPitch().getAlter().asInt()).compare(this, o);
     }
 
     @Override
